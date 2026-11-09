@@ -60,11 +60,29 @@ function resolveEditedPath() {
     const raw = fs.readFileSync(0, "utf8"); // stdin
     if (raw && raw.trim()) {
       const event = JSON.parse(raw);
-      const args = (event.toolCall && event.toolCall.args) || {};
+      // camelCase is the documented contract; snake_case is kept as a
+      // defensive fallback for harness variants.
+      const call = event.toolCall || event.tool_call || null;
+      const args = (call && call.args) || {};
       // Antigravity edit_file/write_file tools expose the target as "Path".
       const candidate = args.Path || args.path || args.file_path || args.filePath;
-      if (candidate && fs.existsSync(candidate)) {
-        return candidate;
+      if (candidate) {
+        if (fs.existsSync(candidate)) {
+          return candidate;
+        }
+        // Hook commands run with cwd set to the plugin root, so
+        // workspace-relative paths must be resolved against the payload's
+        // documented workspacePaths entries (then the hook cwd) before
+        // giving up and falling through to argv.
+        const roots = []
+          .concat(event.workspacePaths || [], event.workspace_paths || [], [process.cwd()])
+          .filter((root) => typeof root === "string" && root);
+        for (const root of roots) {
+          const joined = path.resolve(root, candidate);
+          if (fs.existsSync(joined)) {
+            return joined;
+          }
+        }
       }
     }
   } catch (err) {

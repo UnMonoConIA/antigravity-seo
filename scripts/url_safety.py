@@ -252,6 +252,9 @@ def is_safe_ip(ip_str: str) -> bool:
 #     allowlist exists to permit, and fd00:ec2::254 is unique-local rather
 #     than link-local, so no single address predicate catches all three.
 _LOCAL_TARGETS_ENV = "AGY_SEO_LOCAL_TARGETS"
+# Migrating users from the upstream claude-seo plugin may still export the
+# old name; it is honored as a fallback only.
+_LOCAL_TARGETS_ENV_FALLBACK = "CLAUDE_SEO_LOCAL_TARGETS"
 
 
 # Hostnames and literals no allowlist entry can ever unblock.
@@ -332,7 +335,7 @@ def _local_targets() -> tuple[tuple[str, Optional[int]], ...]:
     configuration, and a cached empty tuple from import time would make the
     setting silently inert in a long-lived process.
     """
-    raw = os.environ.get(_LOCAL_TARGETS_ENV, "")
+    raw = os.environ.get(_LOCAL_TARGETS_ENV) or os.environ.get(_LOCAL_TARGETS_ENV_FALLBACK) or ""
     if not raw.strip():
         return ()
     parsed = (_parse_local_target(part) for part in raw.split(","))
@@ -757,7 +760,7 @@ def _pin_dns(
 # the one place to change them. ``fetch_page.py`` imports them back.
 DEFAULT_USER_AGENT = (
     "Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 "
-    "(KHTML, like Gecko) Chrome/150.0.7871.114 Safari/537.36 AntigravitySEO/2.0"
+    "(KHTML, like Gecko) Chrome/150.0.7871.114 Safari/537.36 AntigravitySEO/1.0.0"
 )
 
 # Without these, ``requests`` announces itself as

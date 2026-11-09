@@ -38,7 +38,7 @@ See the AI Crawler Management section in `seo-technical` skill for crawler token
 Provide a structured report with:
 - Pass/fail status per category
 - Technical score (0-100)
-- Prioritized issues (Critical â†’ High â†’ Medium â†’ Low)
+- Prioritized issues (Critical → High → Medium → Low)
 - Specific recommendations with implementation details
 
 ## Categories to Analyze
@@ -53,7 +53,7 @@ Provide a structured report with:
 8. JavaScript Rendering (CSR vs SSR)
 9. IndexNow Protocol (Bing, Yandex, Naver)
 
-## Fetching pages (v2.0.0)
+## Fetching pages
 
 Use `"<PLUGIN_ROOT>/scripts/antigravity-seo" run render_page.py <URL> --mode auto --json` for page HTML. `auto` does a raw fetch and only spins up Playwright when an SPA shell is detected; use `--mode always` to force a render or `--mode never` to skip Playwright entirely. The JSON exposes `is_spa`, complete `extracted_text`, and `publication_date`; use `--output rendered.html` for the full HTML. SSRF and DNS-rebinding protection live in the bundled `url_safety.py` module, never call `requests.get` directly on user-supplied URLs.
 

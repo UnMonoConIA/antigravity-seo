@@ -39,7 +39,7 @@ range_text="3.${min_minor} to 3.${max_minor}"
 # AGY_SEO_PYTHON is canonical; CLAUDE_SEO_PYTHON is honored for users coming
 # from the upstream claude-seo plugin.
 if [[ -z "${AGY_SEO_PYTHON:-}" && -n "${CLAUDE_SEO_PYTHON:-}" ]]; then
-    AGY_SEO_PYTHON=""
+    AGY_SEO_PYTHON="${CLAUDE_SEO_PYTHON}"
 fi
 if [[ -n "${AGY_SEO_PYTHON:-}" ]]; then
     found="$(probe_version "${AGY_SEO_PYTHON}" || true)"

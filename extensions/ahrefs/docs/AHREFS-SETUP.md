@@ -1,7 +1,7 @@
 # Ahrefs extension setup
 
 Wires the official [`@ahrefs/mcp@0.0.11`](https://www.npmjs.com/package/@ahrefs/mcp)
-server into your Claude Code session so the `seo-ahrefs` skill can call
+server into your Antigravity session so the `seo-ahrefs` skill can call
 live Ahrefs data.
 
 ## Install
@@ -26,7 +26,7 @@ The installer:
 
 ## Verify
 
-Open a new Claude Code session and ask:
+Open a new Antigravity session and ask:
 
 ```
 /seo ahrefs metrics https://example.com

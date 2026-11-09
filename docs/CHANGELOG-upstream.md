@@ -16,7 +16,7 @@ Security and accuracy fixes from a full audit, and Claude Desktop installs again
 backport) needs 3.11. Python 3.15 is not supported yet because the Google Ads
 client library declares `< 3.15`. If your default Python is outside the range,
 the launcher and `install.ps1` now pick a supported one on their own, or you
-can set `AGY_SEO_PYTHON`; `/seo setup` then rebuilds the runtime once.
+can set `CLAUDE_SEO_PYTHON`; `/seo setup` then rebuilds the runtime once.
 
 ### Added
 
@@ -64,14 +64,14 @@ can set `AGY_SEO_PYTHON`; `/seo setup` then rebuilds the runtime once.
   `scripts/claude-seo` and `install.ps1` skip a default interpreter outside the
   range (on Windows, `py -3` picks the newest installed Python, which can be
   3.15) and fall back to the newest supported one, and `install.ps1` now honors
-  `AGY_SEO_PYTHON`. `/seo setup` refuses an unsupported interpreter with a
+  `CLAUDE_SEO_PYTHON`. `/seo setup` refuses an unsupported interpreter with a
   clear message.
 - `requirements.txt` sets `pillow>=13.0.0` (it arrives through matplotlib and
   WeasyPrint).
 - CI runs ruff, tests Python 3.11, 3.12 and 3.14, audits dependencies on both
   3.11 and 3.14, pins GitHub Actions to commit SHAs, and no longer exposes
   `GH_TOKEN` to install steps. The Windows smoke test covers a pinned
-  `AGY_SEO_PYTHON` and the installer's own interpreter choice.
+  `CLAUDE_SEO_PYTHON` and the installer's own interpreter choice.
 - SECURITY.md and PRIVACY.md describe what the code does, including which
   calls go to fixed vendor hosts and how to verify a signed release tag.
 
@@ -167,7 +167,7 @@ seo-cockpit, Google sign-in through your own account, and a schema-hook fix.
 - Google APIs can use the person's own gcloud sign-in
   (`gcloud auth application-default login`): it is the fallback when no
   claude-seo OAuth token or service account is configured, and
-  `AGY_SEO_GOOGLE_AUTH=adc` chooses it even when a service account is set.
+  `CLAUDE_SEO_GOOGLE_AUTH=adc` chooses it even when a service account is set.
   A service account often lacks access to properties the person owns. Only an
   `authorized_user` gcloud file counts, and it refreshes with the scopes
   granted at login.
@@ -301,7 +301,7 @@ as third-party instead of being stated as fact.
   atomically), with the `MATOMO_URL` / `MATOMO_API_TOKEN` / `MATOMO_SITE_ID`
   environment variables still taking precedence. Every request to the instance
   goes through `url_safety`'s DNS-pinned helpers; a self-hosted instance on a
-  private address is reached by naming it in `AGY_SEO_LOCAL_TARGETS`, which
+  private address is reached by naming it in `CLAUDE_SEO_LOCAL_TARGETS`, which
   both installers print at install time, and a redirect away from the instance
   is refused rather than followed. Contributed by Tim J. Peters (#275).
 
@@ -311,7 +311,7 @@ as third-party instead of being stated as fact.
   `extensions/*/install.sh` that writes credentials, and the four
   `install.ps1` files that hand credentials to Python (profound, seranking,
   bing-webmaster, matomo), passed API keys, tokens and passwords to Python as arguments, readable by any local user through
-  `ps`. They now travel in the environment (`AGY_SEO_SECRET` and
+  `ps`. They now travel in the environment (`CLAUDE_SEO_SECRET` and
   friends), which only the same user can read; PowerShell clears the
   variables afterwards. Found while reviewing #305, whose installer shares
   the flaw.
@@ -501,7 +501,7 @@ as third-party instead of being stated as fact.
   RFC 1918, RFC 6598, link-local, or a metadata address is refused with an error
   naming the address. This narrows #280: a loopback CONNECT proxy is no longer
   trusted. (#280, #295)
-- `AGY_SEO_LOCAL_TARGETS` allows auditing a local dev server, a staging host,
+- `CLAUDE_SEO_LOCAL_TARGETS` allows auditing a local dev server, a staging host,
   or a machine reached over Tailscale, without the blanket "allow private"
   switch that would follow any private URL found on a crawled page. It is a
   comma-separated list of `host` or `host:port` entries, consulted only for the
@@ -701,7 +701,7 @@ as third-party instead of being stated as fact.
   absolute path. A layout test keeps `bin/` from coming back. Fixes #298 and #199.
 - CI runs the full suite on Windows and macOS, audits `requirements.txt` with
   `pip-audit`, and no longer swallows a failed dependency install in the v2 audit.
-- `AGY_SEO_CONFIG_DIR` overrides the config and ledger location, so the ledger tests
+- `CLAUDE_SEO_CONFIG_DIR` overrides the config and ledger location, so the ledger tests
   run against an isolated file. `BANANA_HOME` does the same for the Banana ledger.
 - `preload_check.py --fail-under N` turns the score into an opt-in gate.
 - Regression coverage for the backlink report validator, the schema-hook UTF-8 output,
@@ -721,7 +721,7 @@ as third-party instead of being stated as fact.
 - The Repository Topology section of CLAUDE.md describes the two single-remote
   checkouts and the cherry-pick promotion flow actually in use.
 - The three `test_sync_flow.py` tests that call the live GitHub API run only when
-  `AGY_SEO_NETWORK_TESTS=1`; both CI test jobs set it with `GH_TOKEN`.
+  `CLAUDE_SEO_NETWORK_TESTS=1`; both CI test jobs set it with `GH_TOKEN`.
 
 ### Fixed
 
@@ -1493,7 +1493,7 @@ release. v2 will be a separate design conversation:
 
 ### Security
 - **Install script supply chain fix**: Replaced `irm | iex` Windows PowerShell one-liner with `git clone + powershell -File` as primary install method. Claude Code's own security guardrails flagged the old pattern as a supply chain risk (reported by community member). Added collapsible "review before running" section for Unix curl method.
-- **Version pinning**: `install.sh` and `install.ps1` now clone a specific release tag (`v1.3.0`) by default rather than `main`, preventing silent updates. Override with `AGY_SEO_TAG=main`.
+- **Version pinning**: `install.sh` and `install.ps1` now clone a specific release tag (`v1.3.0`) by default rather than `main`, preventing silent updates. Override with `CLAUDE_SEO_TAG=main`.
 - **PowerShell Invoke-External hardening**: Comprehensive `PSNativeCommandUseErrorActionPreference` handling in `Invoke-External` wrapper (fixes Windows git clone stderr false-positive termination, from PR #13 + PR #15).
 
 ### Added
@@ -1537,7 +1537,7 @@ release. v2 will be a separate design conversation:
 ## [1.2.1] - 2026-02-28
 
 ### Fixed
-- **User-Agent header**: Changed default from bot-style `AntigravitySEO/1.0` to Chrome-like string with `AntigravitySEO/1.2` suffix. SSR frameworks (Next.js, Nuxt, Angular) now pre-render properly instead of serving empty client-side shells (#9)
+- **User-Agent header**: Changed default from bot-style `ClaudeSEO/1.0` to Chrome-like string with `ClaudeSEO/1.2` suffix. SSR frameworks (Next.js, Nuxt, Angular) now pre-render properly instead of serving empty client-side shells (#9)
 - **Custom User-Agent support**: Added `--user-agent` flag to `fetch_page.py` for configurable UA strings
 
 ### Added

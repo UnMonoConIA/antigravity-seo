@@ -270,7 +270,8 @@ def _resolve_event(argv: list[str]) -> tuple[str | None, str | None]:
     Both hook contracts deliver the event as JSON on stdin:
 
     - Google Antigravity: ``{"toolCall": {"name": ..., "args": {"Path": ...}}}``
-      (camelCase keys). The bundled ``hooks/antigravity-hook.js`` runner
+      (camelCase keys; a snake_case ``tool_call`` twin is accepted
+      defensively). The bundled ``hooks/antigravity-hook.js`` runner
       already extracts the path and passes it as argv, so the stdin branch is
       a fallback for harnesses that pipe the event directly.
     - Claude Code: ``{"tool_input": {"file_path": ...}}``.
@@ -300,7 +301,7 @@ def _resolve_event(argv: list[str]) -> tuple[str | None, str | None]:
             raw = sys.stdin.read()
             if raw.strip():
                 event = json.loads(raw)
-                tool_call = event.get("toolCall")
+                tool_call = event.get("toolCall") or event.get("tool_call")
                 if isinstance(tool_call, dict):
                     args = tool_call.get("args") or {}
                     fp = args.get("Path") or args.get("path") or args.get("file_path")

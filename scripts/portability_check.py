@@ -2,14 +2,14 @@
 """
 Cross-platform portability lint for SKILL.md files.
 
-antigravity-seo skills run under Claude Code, but also Cursor / Cursor Cloud
-Agents / Google Antigravity / Gemini CLI / OpenAI Codex CLI / Cline /
+antigravity-seo skills run under Google Antigravity, but also Claude Code /
+Cursor / Cursor Cloud Agents / Gemini CLI / OpenAI Codex CLI / Cline /
 Aider. Most harnesses share a minimum frontmatter contract:
 
   - ``name``        (string, kebab-case, < 64 chars)
   - ``description`` (string, < 1024 chars, ends with a period or noun phrase)
 
-Claude-Code-specific fields are tolerated by other harnesses (they are
+Extra frontmatter fields are tolerated by other harnesses (they are
 ignored, not rejected):
 
   - ``model``        (e.g. sonnet, haiku, opus)

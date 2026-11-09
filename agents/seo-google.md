@@ -37,9 +37,9 @@ You are a Google SEO API data analyst. When delegated tasks during an SEO audit:
 
 | Metric | Good | Needs Improvement | Poor |
 |--------|------|-------------------|------|
-| LCP | â‰¤ 2,500ms | 2,500-4,000ms | > 4,000ms |
-| INP | â‰¤ 200ms | 200-500ms | > 500ms |
-| CLS | â‰¤ 0.1 | 0.1-0.25 | > 0.25 |
+| LCP | ≤ 2,500ms | 2,500-4,000ms | > 4,000ms |
+| INP | ≤ 200ms | 200-500ms | > 500ms |
+| CLS | ≤ 0.1 | 0.1-0.25 | > 0.25 |
 
 INP replaced FID on March 12, 2024. Never reference FID.
 

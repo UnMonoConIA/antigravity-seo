@@ -15,7 +15,9 @@ $McpConfigFile = "$env:USERPROFILE\.gemini\config\mcp_config.json"
 # Check prerequisites
 if (-not (Test-Path $SeoSkillDir)) {
     Write-Host "x Antigravity SEO is not installed." -ForegroundColor Red
-    Write-Host "  Install it first: irm https://raw.githubusercontent.com/UnMonoConIA/antigravity-seo/main/install.ps1 | iex"
+    Write-Host "  Install it first: clone the repo, review the installer, then run it:"
+    Write-Host "    git clone --depth 1 https://github.com/UnMonoConIA/antigravity-seo.git"
+    Write-Host "    powershell -ExecutionPolicy Bypass -File antigravity-seo\install.ps1"
     exit 1
 }
 Write-Host "v Antigravity SEO detected" -ForegroundColor Green

@@ -49,7 +49,7 @@ Or check manually:
 ## Common Issues
 
 ### "MCP tools not available"
-- Restart Claude Code after installing the extension
+- Restart Antigravity after installing the extension
 - Verify your API key is valid at [aistudio.google.com](https://aistudio.google.com)
 - Check `~/.gemini/config/mcp_config.json` has the nanobanana-mcp entry
 

@@ -15,7 +15,7 @@ Generate an image from a text prompt.
 
 **Returns:** Image data + file path (saved to `~/Documents/nanobanana_generated/`)
 
-**Example usage in Claude Code:**
+**Example usage in Antigravity:**
 ```
 User: "Generate a sunset over mountains in watercolor style"
 → Claude calls gemini_generate_image with prompt

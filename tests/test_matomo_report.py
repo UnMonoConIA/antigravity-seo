@@ -831,7 +831,7 @@ def test_installers_pass_credentials_through_env_not_source_or_argv():
     assert "sys.argv" in ps1
     assert "$TokenPlain" not in ps1.split('@"')[1].split('"@')[0]
     assert "$env:AGY_SEO_SECRET = $TokenPlain" in ps1
-    assert "python - $MatomoAuth $MatomoUrl $SiteId" in ps1
+    assert "& $PythonExe @PythonArgs - $MatomoAuth $MatomoUrl $SiteId" in ps1
     assert 'AGY_SEO_SECRET="${MATOMO_TOKEN}" python3 -' in sh
 
 

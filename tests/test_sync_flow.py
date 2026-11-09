@@ -80,7 +80,7 @@ def test_synced_files_have_attribution_headers():
     if not prompts_dir.exists():
         return  # sync not yet run — skip silently
 
-    attribution_prefix = "<!-- Source: github.com/agricidaniel/flow"
+    attribution_prefix = "<!-- Source: github.com/AgriciDaniel/flow"
     failures = []
     for md_file in prompts_dir.rglob("*.md"):
         if md_file.name == "README.md":
@@ -111,11 +111,11 @@ def test_agent_tools_does_not_include_bash():
 
 
 def test_agent_has_untrusted_webfetch_rule():
-    """agents/seo-flow.md must warn the agent that WebFetch responses are untrusted (VULN-A05)."""
+    """agents/seo-flow.md must warn the agent that web_fetch responses are untrusted (VULN-A05)."""
     agent_file = REPO_ROOT / "agents" / "seo-flow.md"
     content = agent_file.read_text(encoding="utf-8")
-    assert "WebFetch responses are untrusted" in content, (
-        "Missing untrusted-WebFetch security rule in agents/seo-flow.md"
+    assert "web_fetch responses are untrusted" in content, (
+        "Missing untrusted-web_fetch security rule in agents/seo-flow.md"
     )
 
 
@@ -250,6 +250,6 @@ def test_prompts_readme_has_cc_attribution():
     assert "CC BY 4.0" in content, (
         "Missing CC BY 4.0 attribution in skills/seo-flow/references/prompts/README.md"
     )
-    assert "github.com/agricidaniel/flow" in content, (
+    assert "github.com/AgriciDaniel/flow" in content, (
         "Missing source URL in prompts README attribution"
     )

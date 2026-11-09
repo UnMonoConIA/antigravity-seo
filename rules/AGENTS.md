@@ -1,4 +1,4 @@
-# Antigravity SEO — Plugin Rules
+# Antigravity SEO: Plugin Rules
 
 These rules are active whenever the `antigravity-seo` plugin is enabled. They
 define the runtime contract every `seo-*` skill and agent relies on.
@@ -31,15 +31,22 @@ The launcher resolves a supported Python (3.11–3.14), creates and manages an
 isolated virtual environment (setup), and forwards arguments without a shell.
 Canonical operations:
 
-- `... setup` — create or refresh the isolated runtime and Chromium. Run only
+- `... setup`: create or refresh the isolated runtime and Chromium. Run only
   when the user explicitly asks (`seo setup`) or when a `run` command reports
   the runtime is not ready.
-- `... doctor --json` — read-only readiness check.
-- `... run <script.py> [args...]` — execute one bundled script (allowlisted).
+- `... doctor --json`: read-only readiness check.
+- `... run <script.py> [args...]`: execute one bundled script (allowlisted).
 
-Environment overrides: `AGY_SEO_PYTHON` (interpreter path),
-`AGY_SEO_DATA_DIR` (runtime data directory). The upstream `CLAUDE_SEO_*`
-names are honored as fallbacks for users migrating from claude-seo.
+Environment overrides honored by the launcher (Antigravity name first, with the
+upstream `CLAUDE_*` name kept as a fallback for users migrating from
+claude-seo):
+
+- `AGY_SEO_PYTHON` / `CLAUDE_SEO_PYTHON`: Python interpreter path.
+- `AGY_SEO_DATA_DIR` / `CLAUDE_SEO_DATA_DIR`: runtime data directory override
+  (must be a dedicated subdirectory, never a filesystem root or home).
+- `AGY_SEO_PLUGIN_DATA` / `CLAUDE_PLUGIN_DATA`: plugin data directory.
+- `AGY_SEO_PLUGIN_ROOT` / `CLAUDE_PLUGIN_ROOT`: plugin root override (marks
+  plugin mode).
 
 If a `run` command reports setup is required, suggest `seo setup` and do not
 improvise a `pip install`.

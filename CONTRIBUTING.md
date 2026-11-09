@@ -20,7 +20,8 @@ Use [GitHub Discussions](https://github.com/UnMonoConIA/antigravity-seo/discussi
 1. Fork the repository
 2. Create a feature branch (`git checkout -b feature/my-feature`)
 3. Make your changes
-4. Test with a sample URL before submitting
+4. Run the checks and mention them in your pull request:
+   `python scripts/portability_check.py --strict`, `python scripts/consistency_check.py`, `python -m pytest tests/`
 5. Submit a PR with a clear description of what changed and why
 
 ### Development Setup
@@ -52,11 +53,11 @@ install chromium`). No additional setup needed for either.
 
 ### Guidelines
 
-- All Python scripts should output JSON for Claude Code to parse
+- All Python scripts should output JSON for the Antigravity agent to parse
 - Shell scripts should use `set -euo pipefail` for safety
-- SKILL.md files must stay under 500 lines
+- SKILL.md files (a skill definition: Markdown body plus YAML frontmatter with `name` and `description`, loaded on demand) must stay under 500 lines
 - Reference files should be focused and under 200 lines
-- Follow kebab-case naming for all directories and files
+- Follow kebab-case naming for skill and agent directories (Python scripts stay snake_case)
 - Keep dependencies minimal
 
 ### Code Style
@@ -68,13 +69,14 @@ install chromium`). No additional setup needed for either.
 ## Community Extensions (Pro Hub Challenge)
 
 Antigravity SEO accepts community-built extensions through challenges and PRs.
-v1.9.0 integrated 5 challenge submissions and v1.9.7 added 9 community pull
-requests from 7 contributors. See [CONTRIBUTORS.md](CONTRIBUTORS.md) for the
-full credits.
+The upstream claude-seo project grew through the Pro Hub Challenge, a community
+content-engineering challenge: v1.9.0 integrated 5 challenge submissions and
+v1.9.7 added 9 community pull requests from 7 contributors. See
+[CONTRIBUTORS.md](CONTRIBUTORS.md) for the full credits.
 
 To submit a community extension:
 1. Build your skill/agent/script following the patterns in this repo
 2. Keep SKILL.md under 500 lines, references under 200 lines
-3. All URL-fetching scripts must route through `scripts/url_safety.py` — the canonical SSRF / DNS-rebinding layer (`validate_url()`, `safe_requests_session()`); never fetch a user-supplied URL without it. (`google_auth.py` is OAuth token lifecycle only — not an SSRF guard.)
+3. All URL-fetching scripts must route through `scripts/url_safety.py`: the canonical defense layer against SSRF (server-side request forgery, see the [OWASP SSRF Prevention Cheat Sheet](https://cheatsheetseries.owasp.org/cheatsheets/Server_Side_Request_Forgery_Prevention_Cheat_Sheet.html)) and DNS rebinding (`validate_url()`, `safe_requests_session()`); never fetch a user-supplied URL without it
 4. Include `original_author` in your SKILL.md frontmatter metadata
 5. Submit a PR or post in the [AI Marketing Hub](https://www.skool.com/ai-marketing-hub)

@@ -196,5 +196,5 @@ Gemini uses a two-layer safety architecture:
 - No transparent backgrounds (PNG but always with background)
 - Text rendering quality varies; keep text under 25 characters for best results
 - Safety filters may block some prompts (violence, NSFW, public figures), known to be overly cautious
-- Session context resets between Claude Code conversations
+- Session context resets between Antigravity conversations
 - `imageSize` and thinking level depend on MCP package version support

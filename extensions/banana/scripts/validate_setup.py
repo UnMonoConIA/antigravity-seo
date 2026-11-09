@@ -3,7 +3,7 @@
 Validate that the Claude Banana MCP server is properly configured.
 
 Checks:
-1. Claude Code ~/.gemini/config/mcp_config.json has the MCP entry
+1. Antigravity ~/.gemini/config/mcp_config.json has the MCP entry
 2. API key is present
 3. Node.js/npx is available
 4. Output directory exists or can be created
@@ -18,7 +18,7 @@ import shutil
 import sys
 from pathlib import Path
 
-SETTINGS_PATH = Path.home() / ".claude.json"
+SETTINGS_PATH = Path.home() / ".gemini" / "config" / "mcp_config.json"
 MCP_NAME = "nanobanana-mcp"
 OUTPUT_DIR = Path.home() / "Documents" / "nanobanana_generated"
 
@@ -48,7 +48,7 @@ def main() -> int:
 
     # 1. Settings file exists
     results.append(check(
-        "Claude Code ~/.gemini/config/mcp_config.json exists",
+        "Antigravity ~/.gemini/config/mcp_config.json exists",
         SETTINGS_PATH.exists(),
         str(SETTINGS_PATH),
     ))

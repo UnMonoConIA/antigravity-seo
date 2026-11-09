@@ -1,5 +1,15 @@
 $ErrorActionPreference = "Stop"
-if (-not (Get-Command python -ErrorAction SilentlyContinue)) { throw "Python 3 required" }
+# Same interpreter discovery order as the plugin launcher and hook:
+# AGY_SEO_PYTHON override, then py -3, python3, python.
+if ($env:AGY_SEO_PYTHON) {
+    $PythonExe = $env:AGY_SEO_PYTHON; $PythonArgs = @()
+} elseif (Get-Command py -ErrorAction SilentlyContinue) {
+    $PythonExe = "py"; $PythonArgs = @("-3")
+} elseif (Get-Command python3 -ErrorAction SilentlyContinue) {
+    $PythonExe = "python3"; $PythonArgs = @()
+} elseif (Get-Command python -ErrorAction SilentlyContinue) {
+    $PythonExe = "python"; $PythonArgs = @()
+} else { throw "Python 3 required" }
 $SkillDir = Join-Path $HOME ".gemini/config/plugins/antigravity-seo/skills"
 $AgentsDir = Join-Path $HOME ".gemini/config/plugins/antigravity-seo/agents"
 if (-not (Test-Path (Join-Path $SkillDir "seo"))) { throw "antigravity-seo not installed" }
@@ -16,7 +26,7 @@ $MatomoAuth = Join-Path $RepoRoot "scripts/matomo_auth.py"
 # addresses unless they are named in AGY_SEO_LOCAL_TARGETS. Tell the user
 # now, with the exact host:port, rather than at the first failed call.
 if (Test-Path $MatomoAuth) {
-    $Hint = & python $MatomoAuth --local-target-hint $MatomoUrl 2>$null
+    $Hint = & $PythonExe @PythonArgs $MatomoAuth --local-target-hint $MatomoUrl 2>$null
     if ($Hint) {
         Write-Host ""
         Write-Host "! $MatomoUrl is on a private address."
@@ -60,7 +70,7 @@ print('Wrote Matomo credentials to ' + matomo_auth.CONFIG_PATH)
 "@
 $env:AGY_SEO_SECRET = $TokenPlain
 try {
-    $py | python - $MatomoAuth $MatomoUrl $SiteId
+    $py | & $PythonExe @PythonArgs - $MatomoAuth $MatomoUrl $SiteId
     # A native command's non-zero exit does not throw, even with Stop.
     if ($LASTEXITCODE -ne 0) { throw "Nothing was saved (python exited $LASTEXITCODE). See the message above." }
 } finally { Remove-Item Env:AGY_SEO_SECRET -ErrorAction SilentlyContinue }

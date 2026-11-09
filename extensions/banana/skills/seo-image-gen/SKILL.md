@@ -19,7 +19,7 @@ aspect ratios, and resolution defaults.
 
 ## Architecture Note
 
-This extension is built on [Claude Banana](https://github.com/agricidaniel/banana-claude),
+This extension is built on [Claude Banana](https://github.com/AgriciDaniel/banana-claude),
 the standalone AI image generation skill for Claude Code.
 
 This skill has two components with distinct roles:

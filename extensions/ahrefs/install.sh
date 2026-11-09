@@ -2,7 +2,7 @@
 # Antigravity SEO: Ahrefs extension installer.
 #
 # Wires the official @ahrefs/mcp server into ~/.gemini/config/mcp_config.json and
-# copies the seo-ahrefs mirror skill into ~/.gemini/skills/.
+# copies the seo-ahrefs mirror skill into the plugin's skills directory.
 #
 # Prereq: an Ahrefs API token. Get one at https://ahrefs.com/api.
 set -euo pipefail

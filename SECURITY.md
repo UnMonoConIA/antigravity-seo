@@ -4,7 +4,7 @@
 
 If you discover a security vulnerability, please report it responsibly. Do **not** open a public issue.
 
-1. Open a private [GitHub Security Advisory](https://github.com/AgriciDaniel/claude-seo/security/advisories/new) on this repository. Private vulnerability reporting is enabled, so the "Report a vulnerability" button on the Security tab opens the same form.
+1. Open a private [GitHub Security Advisory](https://github.com/UnMonoConIA/antigravity-seo/security/advisories/new) on this repository. Private vulnerability reporting is enabled, so the "Report a vulnerability" button on the Security tab opens the same form.
 2. If the advisory form is unavailable to you, open a public issue titled "Security contact request" with no technical detail. The maintainer will reply with a private channel.
 3. Encrypt sensitive disclosures if you can. Request the maintainer's PGP key in the advisory thread; the fingerprint is shared there on first request and rotated yearly.
 
@@ -33,9 +33,8 @@ If a fix cannot be shipped within 90 days, the maintainer will request an extens
 
 | Version line | Status | Notes |
 |---|---|---|
-| **2.x** | ✅ Fully supported | Active development; security and bug fixes. |
-| **1.9.x** | ✅ Patch-only for security | Final 1.x line; only CVSS ≥ High issues backported. |
-| < 1.9 | ❌ Unsupported | Please upgrade. |
+| **1.0.x** | ✅ Fully supported | Active development; security and bug fixes. |
+| < 1.0 | ❌ Unsupported | Does not exist; this is the first release line of the port. |
 
 ## Threat model
 
@@ -45,9 +44,9 @@ antigravity-seo is a research and audit toolkit that runs on a user's workstatio
 
    **Mitigation:** `scripts/url_safety.py` is the canonical pre-flight + DNS-pinned fetch layer. Every script that fetches a user-supplied or page-derived URL validates through it. Calls to fixed vendor API hosts (Google, Bing, Moz, Common Crawl, GitHub, DataForSEO) go to those hosts directly. See `tests/test_url_safety.py` for the regression suite covering each bypass class.
 
-2. **Tampered install.** A modified plugin install, GitHub release, or manual install script could deliver altered files. Plugin install is the default path; `curl ... | bash` is the legacy/manual path, so signature verification of release artifacts remains a defence-in-depth concern.
+2. **Tampered install.** A modified plugin install, GitHub release, or manual install script could deliver altered files. Plugin install from a git clone is the default and recommended path, so signature verification of release artifacts remains a defence-in-depth concern.
 
-   **Mitigation status:** SHA-256 manifest tooling (`scripts/release_sign.py`, `scripts/verify_release.py`) shipped in v2.0.0, but the install scripts do not verify a manifest yet and releases do not attach one. Installer verification is planned for v2.6.0. Until then, install by cloning the release tag explicitly (`git clone --branch vX.Y.Z`), check the tag signature, and inspect the diff against the previous release. Release tags are SSH-signed. To verify one locally, put the maintainer's signing key from `https://api.github.com/users/agricidaniel/ssh_signing_keys` in an allowed-signers file as `223140489+agricidaniel@users.noreply.github.com namespaces="git" <key>`, then run `git -c gpg.ssh.allowedSignersFile=<file> tag -v vX.Y.Z` and look for `Good "git" signature`.
+   **Mitigation status:** SHA-256 manifest tooling (`scripts/release_sign.py`, `scripts/verify_release.py`) is bundled. The install scripts do not verify a manifest yet and releases do not attach one. Until then, install by cloning a release tag explicitly (`git clone --branch vX.Y.Z`), inspect the diff against the previous release, and, when a release manifest is published with a tag, verify it with `python scripts/verify_release.py release-manifest.json`.
 
 3. **Local privilege escalation against stored credentials.** The OAuth token at `~/.config/antigravity-seo/oauth-token.json` is the most sensitive on-disk artifact.
 
@@ -91,5 +90,5 @@ If you are auditing, these are the high-leverage files:
 
 - No credentials or API keys are committed to this repository. `.gitignore` blocks every known credential filename pattern.
 - Install scripts write only to user-level directories under `~/.gemini/` and `~/.config/antigravity-seo/`.
-- Python dependencies install into an isolated virtual environment. Plugin installs use persistent `AGY_SEO_PLUGIN_DATA`; manual installs use `~/.gemini/config/plugins/antigravity-seo/.venv/`. The runtime never falls back to global or user package installation.
+- Python dependencies install into an isolated virtual environment. Any installed copy (with `plugin.json` and no `.git`) keeps its data in the platform data dir: `%LOCALAPPDATA%\antigravity-seo` on Windows, `~/Library/Application Support/antigravity-seo` on macOS, `${XDG_DATA_HOME:-~/.local/share}/antigravity-seo` on Linux. A git checkout keeps its runtime data in the repository root. The runtime never falls back to global or user package installation.
 - Every new fetcher of a user-supplied or page-derived URL must route through `scripts/url_safety.py`. There is no exception for "trusted" URLs.

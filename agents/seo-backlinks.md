@@ -110,7 +110,7 @@ If any check fails, fix the report before returning it.
 - Never fail silently, always report what succeeded and what failed
 - If all free sources fail, suggest DataForSEO extension: `./extensions/dataforseo/install.sh`
 
-## Fetching pages (v2.0.0)
+## Fetching pages
 
 Use `"<PLUGIN_ROOT>/scripts/antigravity-seo" run render_page.py <URL> --mode auto --json` for page HTML. `auto` does a raw fetch and only spins up Playwright when an SPA shell is detected; use `--mode always` to force a render or `--mode never` to skip Playwright entirely. The JSON exposes full `raw_content`, `content`, `extracted_text`, `is_spa`, and `publication_date`; use `--max-text` only when explicit bounded output is needed. SSRF and DNS-rebinding protection live in the bundled `url_safety.py` module, never call `requests.get` directly on user-supplied URLs.
 

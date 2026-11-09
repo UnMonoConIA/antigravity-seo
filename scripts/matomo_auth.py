@@ -54,7 +54,7 @@ except ImportError as _import_exc:  # pragma: no cover - hard dependency
 
 CONFIG_PATH = os.path.expanduser("~/.config/antigravity-seo/matomo.json")
 DEFAULT_TIMEOUT = 15
-USER_AGENT = "AntigravitySEO/2.3.0"
+USER_AGENT = "AntigravitySEO/1.0.0"
 LOCAL_TARGETS_ENV = "AGY_SEO_LOCAL_TARGETS"
 
 _SECRET_RE = re.compile(r"(token_auth|token|password)=[^\s&\"']+", re.IGNORECASE)

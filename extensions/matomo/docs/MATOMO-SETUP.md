@@ -121,17 +121,18 @@ have both GA4 and Matomo configured.
 ```
 
 This removes the skill, the agent, and
-`~/.config/antigravity-seo/matomo.json`, and clears any `MATOMO_*` entries a
-pre-v2.4.0 installer had left in `~/.gemini/config/mcp_config.json`.
+`~/.config/antigravity-seo/matomo.json`, and clears any `MATOMO_*` entries
+an older installer had left in `~/.config/antigravity-seo/extension-env.json`.
 
 PowerShell manual removal:
 
 ```powershell
-Remove-Item -Recurse -Force "$HOME\.claude\skills\seo-matomo"
-Remove-Item -Force "$HOME\.claude\agents\seo-matomo.md"
+Remove-Item -Recurse -Force "$HOME\.gemini\config\plugins\antigravity-seo\skills\seo-matomo"
+Remove-Item -Force "$HOME\.gemini\config\plugins\antigravity-seo\agents\seo-matomo.md"
 Remove-Item -Force "$HOME\.config\antigravity-seo\matomo.json"
 ```
 
-If you installed a pre-v2.4.0 build, also open `~/.gemini/config/mcp_config.json` and
-remove `MATOMO_URL`, `MATOMO_API_TOKEN`, and `MATOMO_SITE_ID` from the
+If an older installer wrote `MATOMO_*` variables into
+`~/.config/antigravity-seo/extension-env.json`, open that file and remove
+`MATOMO_URL`, `MATOMO_API_TOKEN`, and `MATOMO_SITE_ID` from the
 top-level `env` object.

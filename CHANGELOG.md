@@ -40,6 +40,9 @@ Initial port of claude-seo v2.5.0 to a native Google Antigravity plugin.
   documents (private marketplace sync, point-in-time verification snapshot)
   that do not apply to this repository. Upstream history remains in
   [docs/CHANGELOG-upstream.md](docs/CHANGELOG-upstream.md).
+- Unreferenced `assets/` marketing artwork that carried upstream branding and
+  the Claude Code marketplace install flow. `assets/framework.svg` stays: the
+  hash-locked FLOW framework reference cites it.
 
 ### Changed
 - `${CLAUDE_PLUGIN_ROOT}` replaced by a self-relative `<PLUGIN_ROOT>` token:
@@ -55,7 +58,7 @@ Initial port of claude-seo v2.5.0 to a native Google Antigravity plugin.
 - Agent specs map to Antigravity subagent mechanics: `model: sonnet` →
   `model: inherit`, `model: opus` → `model: pro`, and Claude Code tool names
   map to Antigravity equivalents (`read_file`, `run_command`, `write_file`,
-  `edit_file`, `web_fetch`).
+  `edit_file`, `web_fetch`, `search_web`, `search_files`).
 - User-Agent product token: `AntigravitySEO/…` (was `ClaudeSEO/…`).
 - HTTP fetch User-Agent and all branding now say Antigravity SEO.
 

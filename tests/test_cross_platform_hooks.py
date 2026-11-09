@@ -98,6 +98,76 @@ def test_hook_runner_outputs_empty_object_without_payload() -> None:
     assert proc.stdout.strip() == "{}"
 
 
+def _blocking_page(tmp_path: Path) -> Path:
+    page = tmp_path / "page.html"
+    page.write_text(
+        '<html><head><script type="application/ld+json">'
+        '{"@context":"https://schema.org","@type":"LocalBusiness","name":"[Business Name]"}'
+        "</script></head></html>",
+        encoding="utf-8",
+    )
+    return page
+
+
+def test_hook_runner_accepts_snake_case_tool_call(tmp_path: Path) -> None:
+    node = shutil.which("node")
+    if not node:
+        pytest.skip("node is not available in this test environment")
+
+    # camelCase is the documented contract; a snake_case twin must not
+    # silently disable schema validation.
+    page = _blocking_page(tmp_path)
+    event = json.dumps(
+        {"tool_call": {"name": "edit_file", "args": {"Path": str(page)}}}
+    )
+    env = os.environ.copy()
+    env["AGY_SEO_PYTHON"] = sys.executable
+
+    proc = subprocess.run(
+        [node, str(HOOK_LAUNCHER)],
+        input=event,
+        env=env,
+        capture_output=True,
+        text=True,
+        timeout=30,
+    )
+
+    assert proc.returncode == 2
+    assert "[Business Name]" in proc.stderr
+    assert proc.stdout.strip() == "{}"
+
+
+def test_hook_runner_resolves_workspace_relative_paths(tmp_path: Path) -> None:
+    node = shutil.which("node")
+    if not node:
+        pytest.skip("node is not available in this test environment")
+
+    # Hook commands run with cwd = plugin root, so a workspace-relative
+    # "Path" must be resolved against the payload's workspacePaths entries.
+    page = _blocking_page(tmp_path)
+    event = json.dumps(
+        {
+            "toolCall": {"name": "edit_file", "args": {"Path": "page.html"}},
+            "workspacePaths": [str(tmp_path)],
+        }
+    )
+    env = os.environ.copy()
+    env["AGY_SEO_PYTHON"] = sys.executable
+
+    proc = subprocess.run(
+        [node, str(HOOK_LAUNCHER)],
+        input=event,
+        env=env,
+        capture_output=True,
+        text=True,
+        timeout=30,
+    )
+
+    assert proc.returncode == 2
+    assert "[Business Name]" in proc.stderr
+    assert proc.stdout.strip() == "{}"
+
+
 def test_windows_installer_prefers_py_launcher_and_rejects_store_stubs() -> None:
     text = INSTALL_PS1.read_text(encoding="utf-8")
     py_pos = text.index("Exe = 'py'; Args = @('-3')")

@@ -2,18 +2,18 @@
 
 ## Overview
 
-Antigravity SEO follows Anthropic's official Claude Code skill specification with a modular, multi-skill architecture.
+Antigravity SEO is a native Google Antigravity plugin with a modular, multi-skill architecture.
 
 ## Directory Structure
 
 The plugin ships 26 sub-skills (22 core + 1 orchestrator + 1 framework integration + 2 extension mirrors) and 19 sub-agents (16 core + 1 framework integration + 2 extension mirrors).
 
 ```
-~/.gemini/plugins/.../antigravity-seo/
+~/.gemini/config/plugins/antigravity-seo/
 ├── skills/
 │   ├── seo/                    # Main orchestrator
 │   │   ├── SKILL.md
-│   │   └── references/         # On-demand reference files (13 files)
+│   │   └── references/         # On-demand reference files (17 files)
 │   │
 │   ├── seo-audit/              # Full site audit (parallel subagents)
 │   ├── seo-page/               # Single page analysis
@@ -87,12 +87,19 @@ Instructions and documentation...
 
 Subagents are specialized workers that can be delegated tasks. They have their own context and tools.
 
+Antigravity plugins bundle skills, rules, hooks and MCP servers, but they do
+not auto-discover an `agents/` directory. The orchestrator therefore reads each
+`agents/<name>.md` spec and registers it with the platform's subagent
+definition mechanism at runtime (see `rules/AGENTS.md`), then invokes the
+registered `seo-*` subagents in parallel.
+
 **Agent Format:**
 ```yaml
 ---
 name: agent-name
 description: What this agent does.
-tools: Read, Bash, Write, Glob, Grep
+model: inherit
+tools: read_file, run_command, write_file, search_files
 ---
 
 Instructions for the agent...
@@ -241,14 +248,19 @@ Skills and agents therefore call the launcher by its plugin-relative path,
 `"<PLUGIN_ROOT>/scripts/antigravity-seo" run <script.py>`, where
 `<PLUGIN_ROOT>` is the plugin's absolute install path, resolved by the agent
 from the skill's own absolute location (see `rules/AGENTS.md`). The quoting
-keeps the command correct when the plugin root contains spaces. Manual
-installers (`install.sh`, `install.ps1`) copy the launcher to
-`~/.gemini/config/plugins/antigravity-seo/scripts/antigravity-seo`
-and rewrite that canonical token to the absolute path in every Markdown file
-they install, because a manual install has no plugin root.
+keeps the command correct when the plugin root contains spaces. Installers
+(`install.sh`, `install.ps1`) copy the whole plugin tree verbatim to
+`~/.gemini/config/plugins/antigravity-seo/`; no path rewriting happens at
+install time, because `<PLUGIN_ROOT>` is resolved at runtime by the agent
+(see `rules/AGENTS.md`).
 
-Plugin environments live under persistent `AGY_SEO_PLUGIN_DATA`. Manual installs
-keep the compatible `~/.gemini/config/plugins/antigravity-seo/.venv` location. A state marker records
+Plugin environments live under persistent `AGY_SEO_PLUGIN_DATA`. Any install
+whose directory contains `plugin.json` and no `.git` (installer or manual
+copy) is classified as a plugin, so its data lives in the platform data dir:
+`%LOCALAPPDATA%\antigravity-seo` on Windows,
+`~/Library/Application Support/antigravity-seo` on macOS, and
+`${XDG_DATA_HOME:-~/.local/share}/antigravity-seo` on Linux. Only a git
+checkout (with `.git`) keeps its runtime data in the repository root. A state marker records
 the runtime schema, requirements SHA-256, Python major and minor version, public
 plugin version, and browser state. Requirements, runtime-schema, or Python ABI
 changes require explicit setup; a version-only difference remains compatible and
@@ -260,7 +272,7 @@ It forwards arguments without a shell, preserves child exit codes, forces UTF-8
 child streams, and uses the same persistent Playwright browser directory created
 by setup.
 
-Extensions are opt-in add-ons that integrate external data sources via MCP servers. They live in `extensions/<name>/` and ship their own install / uninstall scripts.
+Extensions are opt-in add-ons that integrate external data sources via MCP servers. They live in `extensions/<name>/` and ship their own install / uninstall scripts. Their installers target the global plugin directory (`~/.gemini/config/plugins/antigravity-seo`); a workspace-only install (`.agents/plugins/`) is not detected by them.
 
 ```
 extensions/
@@ -321,6 +333,14 @@ extensions/
 │   ├── skills/seo-bing/SKILL.md
 │   └── docs/BING-WEBMASTER-SETUP.md
 │
+├── matomo/                   # Matomo Reporting API analytics
+│   ├── install.sh
+│   ├── install.ps1
+│   ├── uninstall.sh
+│   ├── skills/seo-matomo/SKILL.md
+│   ├── agents/seo-matomo.md
+│   └── docs/MATOMO-SETUP.md
+│
 └── unlighthouse/             # Multi-page Lighthouse runner (local)
     ├── install.sh
     ├── install.ps1
@@ -340,6 +360,7 @@ extensions/
 | **SE Ranking** | SE Ranking API | AI Share-of-Voice across ChatGPT, Gemini, Perplexity, AI Overviews, and AI Mode |
 | **Profound** | Profound API | LLM citation tracking with time-series data |
 | **Bing Webmaster** | Bing Webmaster Tools API | Bing Webmaster Tools + IndexNow URL submission |
+| **Matomo** | Matomo Reporting API | Organic traffic, top landing pages, device and country breakdowns, referrer analysis; a GA4 alternative or supplement |
 | **Unlighthouse** | `unlighthouse@0.13.5` | Multi-page Lighthouse runner, runs locally |
 
 ### Extension Convention

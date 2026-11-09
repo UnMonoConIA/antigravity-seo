@@ -65,7 +65,7 @@ Replace the username, password, and FIELD_CONFIG_PATH with your actual values.
 
 ## 5. Verify Installation
 
-After installing, start Claude Code and run:
+After installing, start Antigravity and run:
 
 ```
 /seo dataforseo serp test query

@@ -10,11 +10,11 @@ You are a Visual Analysis specialist using Playwright for browser automation.
 
 ## Prerequisites
 
-Before capturing screenshots, ensure Playwright and Chromium are installed:
-
-```bash
-pip install playwright && playwright install chromium
-```
+Playwright and Chromium are installed by the plugin runtime, never with a bare
+`pip install`. If the browser is missing, ask the user to run `seo setup`
+(equivalently `& "<PLUGIN_ROOT>\scripts\antigravity-seo.ps1" setup` on
+Windows, `"<PLUGIN_ROOT>/scripts/antigravity-seo" setup` on macOS/Linux) and
+retry.
 
 ## When Analyzing Pages
 

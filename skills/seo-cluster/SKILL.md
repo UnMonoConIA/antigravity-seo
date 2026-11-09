@@ -41,7 +41,7 @@ interactive cluster map visualizations.
 
 ### Step 1: Seed Keyword Expansion
 
-Expand the seed keyword into 30-50 variants using WebSearch:
+Expand the seed keyword into 30-50 variants using search_web:
 
 1. **Related searches**: Search the seed, extract "related searches" and "people also search for"
 2. **People Also Ask (PAA)**: Extract all PAA questions from SERP results
@@ -60,7 +60,7 @@ the full algorithm.
 
 **Process:**
 1. Group keywords by initial intent guess (reduces pairwise comparisons)
-2. For each candidate pair within a group, WebSearch both keywords
+2. For each candidate pair within a group, search_web both keywords
 3. Count shared URLs in the top 10 organic results (ignore ads, featured snippets, PAA)
 4. Apply thresholds:
 
@@ -77,9 +77,9 @@ the full algorithm.
 - Skip pairs where both are long-tail variants of the same head term (assume same cluster)
 
 **DataForSEO integration:** If DataForSEO MCP is available, use `serp_organic_live_advanced`
-instead of WebSearch for SERP data. Run `"<PLUGIN_ROOT>/scripts/antigravity-seo" run dataforseo_costs.py check serp_organic_live_advanced --count N`
+instead of search_web for SERP data. Run `"<PLUGIN_ROOT>/scripts/antigravity-seo" run dataforseo_costs.py check serp_organic_live_advanced --count N`
 before each batch. If `"status": "needs_approval"`, show cost estimate and ask user.
-If `"status": "blocked"`, fall back to WebSearch.
+If `"status": "blocked"`, fall back to search_web.
 
 ### Step 3: Intent Classification
 
@@ -234,7 +234,7 @@ for example claude-blog:blog-write)? If unsure, check both install layouts:
    - Key points to cover
    - Competing pages to differentiate from
 3. Write briefs to `cluster-briefs/` directory as individual markdown files
-4. Inform user: "Install [claude-blog](https://github.com/agricidaniel/claude-blog)
+4. Inform user: "Install [claude-blog](https://github.com/AgriciDaniel/claude-blog)
    to auto-create content. Briefs saved to `cluster-briefs/`."
 
 ---
@@ -303,11 +303,11 @@ After cluster planning or execution completes, offer:
 |-------|-------|------------|
 | "No seed keyword provided" | Missing argument | Prompt user for seed keyword or URL |
 | "Insufficient keyword variants" | Expansion yielded < 15 keywords | Run second expansion pass with PAA questions |
-| "SERP data unavailable" | WebSearch and DataForSEO both failing | Retry after 30s; if persistent, use intent-only clustering with warning |
+| "SERP data unavailable" | search_web and DataForSEO both failing | Retry after 30s; if persistent, use intent-only clustering with warning |
 | "No strategy file found" | `--from strategy` but no plan exists | Prompt user to run `/seo plan` first |
 | "cluster-plan.json not found" | Execute without planning | Prompt user to run `/seo cluster plan` first |
 | "claude-blog not installed" | Execute attempted without blog skill | Generate content briefs instead; suggest installation |
-| "DataForSEO budget exceeded" | Cost check returned "blocked" | Fall back to WebSearch; inform user |
+| "DataForSEO budget exceeded" | Cost check returned "blocked" | Fall back to search_web; inform user |
 | "Duplicate primary keywords" | Cannibalization detected | Merge affected posts or reassign keywords |
 | "Orphan page detected" | Post missing incoming links | Add links from nearest cluster siblings |
 | "Resume state corrupted" | Mismatch between plan and output | Rebuild state from output directory scan |

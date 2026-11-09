@@ -6,7 +6,11 @@ All Antigravity SEO commands start with `seo` followed by a subcommand. The
 `/seo` spelling also works: Antigravity delivers every chat message to the
 loaded skills, so both forms route identically.
 
-## Page-fetching script
+## Page-fetching script (for skill developers)
+
+`<PLUGIN_ROOT>` below is the plugin's install root:
+`~/.gemini/config/plugins/antigravity-seo` for global installs (or
+`<project>/.agents/plugins/antigravity-seo` for workspace installs).
 
 Use `"<PLUGIN_ROOT>/scripts/antigravity-seo" run fetch_page.py https://example.com --json` for structured
 retrieval. Both the raw path (default, `--render never`) and the rendered path
@@ -15,11 +19,14 @@ retrieval. Both the raw path (default, `--render never`) and the rendered path
 `status_code`, `content`, `raw_content`, `is_spa`, `extracted_text`,
 `publication_date`, `accessibility_tree`, `accessibility_error`,
 `accessibility_partial`, `headers`, `redirect_chain`, `console_errors`,
-`render_diagnostics`, `render_engine`, `render_ms`, `mode_used`, `error`,
-`structured_data`, and `truncation`. The raw path fills renderer-only fields
-(`is_spa`, `extracted_text`, `render_engine`, ...) with `None`/empty defaults.
-Fetch errors still emit JSON and exit 1; successful fetches exit 0. HTTP status
-codes are reported without changing this behavior.
+`render_diagnostics`, `render_engine`, `render_ms`, `mode_used`, `too_large`,
+`error`, `structured_data`, and `truncation`. The raw path fills renderer-only
+fields (`is_spa`, `extracted_text`, `render_engine`, ...) with `None`/empty
+defaults. `too_large` is true when the body hit the size cap (the `content`
+field then holds only the part read before it). `raw_fallback_available`
+appears only on the rendered path: true when rendering failed but the raw
+fetch succeeded. Fetch errors still emit JSON and exit 1; successful fetches
+exit 0. HTTP status codes are reported without changing this behavior.
 
 Pass `--max-text N` to cap the `content`, `raw_content`, and `extracted_text`
 fields at N characters each; `truncation.fields` reports the original and
@@ -35,8 +42,9 @@ unchanged.
 ### `/seo setup`
 
 Explicitly create or refresh the isolated Python runtime and Playwright Chromium.
-This is required once after a fresh plugin install. Manual installers run
-the same setup automatically. It never installs packages globally.
+This is required once after a fresh plugin install, and again after each
+upgrade. The installers only copy files; they never provision the runtime.
+It never installs packages globally.
 
 ### `/seo doctor`
 
@@ -192,10 +200,10 @@ Agent readiness: how well AI agents that browse and act for people can read and 
 
 **What it analyzes:**
 - Lighthouse Agentic Browsing result as Lighthouse computes it (X of N, N/A and informative audits excluded)
-- Accessibility tree for agents (the 33 axe rules Lighthouse uses, plus the local Agent-UX heuristic)
-- robots.txt groups per AI purpose (training, search, user-triggered) and Content-Signal
-- llms.txt, Markdown delivery (`Accept: text/markdown`, `.md` alternates), ai-catalog.json, `/.well-known` files
-- WebMCP tools and form annotations, labelled as a W3C Community Group draft
+- Accessibility tree for agents (the 33 axe accessibility rules Lighthouse uses, plus the local Agent-UX heuristic)
+- robots.txt groups per AI purpose (training, search, user-triggered) and Content-Signal (a proposed robots.txt extension that tells agents what the site is for)
+- llms.txt (a proposed file describing the site to AI models), Markdown delivery (`Accept: text/markdown`, `.md` alternates), ai-catalog.json, `/.well-known` files
+- WebMCP tools and form annotations (a W3C Community Group draft for exposing site tools to agents)
 
 `fix` drafts robots.txt Content-Signal lines, llms.txt, ai-catalog.json and WebMCP scaffolds for review; nothing is deployed.
 
@@ -203,7 +211,7 @@ Agent readiness: how well AI agents that browse and act for people can read and 
 
 ### `/seo images <url>`
 
-Image optimization analysis. Subcommands: `serp <keyword>` (image SERP / visual-search analysis), `optimize <path>` (local file optimization + IPTC AI labeling).
+Image optimization analysis. Subcommands: `serp <keyword>` (image SERP / visual-search analysis), `optimize <path>` (local file optimization + IPTC (the image metadata standard) AI labeling).
 
 **Examples:**
 ```
@@ -253,7 +261,7 @@ Generate new sitemap with industry templates.
 **Process:**
 1. Select or auto-detect business type
 2. Interactive structure planning
-3. Apply quality gates (30/50 location page limits)
+3. Apply quality gates (a warning at 30+ location pages enforcing 60%+ unique content per page, a hard stop at 50+ requiring your explicit justification)
 4. Generate valid XML
 5. Create documentation
 
@@ -354,7 +362,7 @@ Local SEO analysis covering Google Business Profile, citations, reviews, and the
 - NAP (Name, Address, Phone) consistency across the page and external citations
 - Review velocity, response rate, and sentiment
 - Local schema markup (LocalBusiness, Restaurant, Service-specific types)
-- Industry-specific local factors (brick-and-mortar, SAB, hybrid)
+- Industry-specific local factors (brick-and-mortar, SAB (service-area business), hybrid)
 - Map pack visibility signals
 
 ---
@@ -408,7 +416,7 @@ Backlink profile analysis with a 3-tier data cascade: free (Common Crawl + verif
 
 ### `/seo cluster [command] <seed-keyword>`
 
-SERP-based semantic topic clustering for content architecture planning. Built on the Pro Hub Challenge Semantic Cluster Engine. Subcommands: `plan <seed>` (full planning workflow; also `plan --from strategy` to import a `/seo plan` output), `execute` (create content via claude-blog or output briefs), `map` (regenerate the interactive visualization). Bare `/seo cluster <seed>` is shorthand for `plan`.
+SERP-based semantic topic clustering for content architecture planning. Built on the Pro Hub Challenge Semantic Cluster Engine (an external content-engineering community project). Subcommands: `plan <seed>` (full planning workflow; also `plan --from strategy` to import a `/seo plan` output), `execute` (create content via claude-blog, an external blog-publishing tool, or output briefs), `map` (regenerate the interactive visualization). Bare `/seo cluster <seed>` is shorthand for `plan`.
 
 **Examples:**
 ```
@@ -430,7 +438,7 @@ SERP-based semantic topic clustering for content architecture planning. Built on
 
 ### `/seo sxo <url>`
 
-Search Experience Optimization: SERP backwards analysis, page-type mismatch detection, persona scoring. Subcommands: `<url> <keyword>` (analyze for a specific keyword), `wireframe <url>` (IST/SOLL wireframe), `personas <url>` (persona-only scoring, skips SERP).
+Search Experience Optimization: SERP backwards analysis, page-type mismatch detection, persona scoring. Subcommands: `<url> <keyword>` (analyze for a specific keyword), `wireframe <url>` (IST/SOLL wireframe: current-state vs target-state), `personas <url>` (persona-only scoring, skips SERP).
 
 **Examples:**
 ```
@@ -702,7 +710,7 @@ Bing Webmaster Tools + IndexNow (extension). **Prerequisites:** Bing extension i
 
 ### `/seo matomo [command] [site-id]`
 
-Matomo Reporting API (extension). **Prerequisites:** Matomo extension installed (`./extensions/matomo/install.sh`), which writes the instance URL, API token, and optional default site ID to `~/.config/antigravity-seo/matomo.json` (0600). `MATOMO_URL`, `MATOMO_API_TOKEN`, and `MATOMO_SITE_ID` in the environment override the file. Works against self-hosted Matomo or Matomo Cloud; an instance on a private address must be named in `AGY_SEO_LOCAL_TARGETS`.
+Matomo Reporting API (extension). **Prerequisites:** Matomo extension installed (`./extensions/matomo/install.sh`), which writes the instance URL, API token, and optional default site ID to `~/.config/antigravity-seo/matomo.json` (0600). `MATOMO_URL`, `MATOMO_API_TOKEN`, and `MATOMO_SITE_ID` in the environment override the file. Works against self-hosted Matomo or Matomo Cloud; an instance on a private address must be named in `AGY_SEO_LOCAL_TARGETS` (a comma-separated allowlist of `host` or `host:port` entries, for example `localhost:3000,127.0.0.1:8080,100.101.102.103`, exported in your environment).
 
 Use as a GA4 alternative or supplement when you want full data ownership, no Google dependency, or privacy-first analytics.
 ```

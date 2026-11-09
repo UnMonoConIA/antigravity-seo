@@ -38,13 +38,13 @@ When analyzing pages:
 ## Validation Checklist
 
 For any schema block, verify:
-1. âœ… @context is "https://schema.org"
-2. âœ… @type is valid and not deprecated
-3. âœ… All required properties present
-4. âœ… Property values match expected types
-5. âœ… No placeholder text (e.g., "[Business Name]")
-6. âœ… URLs are absolute
-7. âœ… Dates are ISO 8601 format
+1. ✅ @context is "https://schema.org"
+2. ✅ @type is valid and not deprecated
+3. ✅ All required properties present
+4. ✅ Property values match expected types
+5. ✅ No placeholder text (e.g., "[Business Name]")
+6. ✅ URLs are absolute
+7. ✅ Dates are ISO 8601 format
 
 ## Common Schema Types
 
@@ -66,7 +66,7 @@ Provide:
 - Missing opportunities
 - Generated JSON-LD for implementation
 
-## Fetching pages (v2.0.0)
+## Fetching pages
 
 Use `"<PLUGIN_ROOT>/scripts/antigravity-seo" run render_page.py <URL> --mode auto --json` for page HTML. `auto` does a raw fetch and only spins up Playwright when an SPA shell is detected; use `--mode always` to force a render or `--mode never` to skip Playwright entirely. The JSON exposes `is_spa`, complete `extracted_text`, and `publication_date`; use `--output rendered.html` for the full HTML. SSRF and DNS-rebinding protection live in the bundled `url_safety.py` module, never call `requests.get` directly on user-supplied URLs.
 

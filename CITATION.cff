@@ -4,6 +4,7 @@ message: >-
   Free, open-source SEO audits inside Google Antigravity. Rank higher in
   Google and get cited by AI search.
 type: software
+version: 1.0.0
 authors:
   - givennames: "UnMonoConIA"
     website: "https://github.com/UnMonoConIA"

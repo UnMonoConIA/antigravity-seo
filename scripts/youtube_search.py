@@ -6,7 +6,7 @@ AI visibility correlation metrics are methodology-dependent.
 This script provides authoritative YouTube data directly from Google.
 
 Usage:
-    python youtube_search.py search "claude code seo"
+    python youtube_search.py search "antigravity seo"
     python youtube_search.py video dQw4w9WgXcQ --json
     python youtube_search.py channel UCxxxxxx --json
 """

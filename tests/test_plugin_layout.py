@@ -113,7 +113,7 @@ def test_installers_copy_the_whole_plugin_tree() -> None:
     assert '".gemini\\config\\plugins\\antigravity-seo"' in windows
     assert '".agents\\plugins\\antigravity-seo"' in windows
     assert "-Workspace" in windows
-    assert '"$exclude = @(".git", ".github")"' in windows
+    assert '$exclude = @(".git", ".github")' in windows
     assert "Remove-Item -Recurse -Force (Join-Path $Destination \".git\")" in windows
     assert "bin/antigravity-seo" not in windows
 

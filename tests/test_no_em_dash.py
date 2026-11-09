@@ -3,14 +3,18 @@
 The 2026-09-28 house-style pass removed every em dash from skills/, agents/,
 scripts/, schema/, data/, extensions/, docs/, README.md and AGENTS.md,
 rewriting each into plain punctuation (comma, period, colon, parentheses or
-conjunction) so the codebase reads consistently. This test is the regression
-gate: it fails if a future edit reintroduces one.
+conjunction) so the codebase reads consistently. The Antigravity port extends
+the gate to the plugin rules file (rules/AGENTS.md) and the contribution
+guide (CONTRIBUTING.md). This test is the regression gate: it fails if a
+future edit reintroduces one.
 
 Two kinds of exception exist:
 
 1. Paths that are synced upstream and hash-locked (skills/seo-flow/references/
-   prompts/** and skills/seo-flow/references/flow-prompts.lock). Those files
-   are never touched by this house-style rule.
+   prompts/** and skills/seo-flow/references/flow-prompts.lock), plus the
+   preserved upstream changelog history (docs/CHANGELOG-upstream.md, kept
+   byte-identical to upstream for attribution). Those files are never touched
+   by this house-style rule.
 2. A small allowlist of occurrences that are functional, not stylistic: a
    character class in a regex that detects or strips em dashes, and one
    generated-file header string that must keep matching the (excluded,
@@ -40,10 +44,13 @@ TARGET_PREFIXES = (
     "extensions/",
     "docs/",
 )
-TARGET_FILES = {"README.md", "AGENTS.md"}
+TARGET_FILES = {"README.md", "AGENTS.md", "rules/AGENTS.md", "CONTRIBUTING.md"}
 
 EXCLUDED_PREFIXES = ("skills/seo-flow/references/prompts/",)
-EXCLUDED_FILES = {"skills/seo-flow/references/flow-prompts.lock"}
+EXCLUDED_FILES = {
+    "skills/seo-flow/references/flow-prompts.lock",
+    "docs/CHANGELOG-upstream.md",
+}
 
 # (relative path, exact line content) pairs that are allowed to keep an em
 # dash because it is functional, not prose.

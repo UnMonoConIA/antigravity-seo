@@ -33,7 +33,7 @@ COMMON_PATHS = (
 MAX_DECLARED = 16
 MAX_ROBOTS_BYTES = 1024 * 1024
 MAX_SITEMAP_BYTES = 50 * 1024 * 1024
-USER_AGENT = "AntigravitySEO/2.2 SitemapDiscovery"
+USER_AGENT = "AntigravitySEO/1.0.0 SitemapDiscovery"
 _SITEMAP_LINE = re.compile(r"^\s*sitemap\s*:\s*(\S+)\s*$", re.IGNORECASE)
 
 

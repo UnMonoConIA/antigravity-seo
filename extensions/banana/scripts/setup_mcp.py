@@ -1,8 +1,8 @@
 #!/usr/bin/env python3
 """
-Setup script for Claude Banana MCP server in Claude Code.
+Setup script for Claude Banana MCP server in Google Antigravity.
 
-Configures @ycse/nanobanana-mcp in Claude Code's ~/.gemini/config/mcp_config.json
+Configures @ycse/nanobanana-mcp in Antigravity's ~/.gemini/config/mcp_config.json
 with the user's Google AI API key.
 
 Usage:
@@ -19,13 +19,13 @@ import sys
 import tempfile
 from pathlib import Path
 
-SETTINGS_PATH = Path.home() / ".claude.json"
+SETTINGS_PATH = Path.home() / ".gemini" / "config" / "mcp_config.json"
 MCP_NAME = "nanobanana-mcp"
 MCP_PACKAGE = "@ycse/nanobanana-mcp@1.1.1"
 
 
 def load_settings() -> dict:
-    """Load Claude Code ~/.gemini/config/mcp_config.json."""
+    """Load Antigravity's ~/.gemini/config/mcp_config.json."""
     if not SETTINGS_PATH.exists():
         return {}
     with open(SETTINGS_PATH, "r") as f:
@@ -33,9 +33,9 @@ def load_settings() -> dict:
 
 
 def save_settings(settings: dict) -> None:
-    """Save Claude Code ~/.gemini/config/mcp_config.json atomically.
+    """Save Antigravity's ~/.gemini/config/mcp_config.json atomically.
 
-    ~/.gemini/config/mcp_config.json is shared with Claude Code itself and other installers, so
+    ~/.gemini/config/mcp_config.json is shared with Antigravity itself and other installers, so
     a write is staged to a temp file in the same directory and swapped into
     place with ``os.replace`` (atomic on POSIX and Windows). This avoids a
     reader ever observing a truncated or partially written file, and avoids
@@ -43,7 +43,7 @@ def save_settings(settings: dict) -> None:
     """
     SETTINGS_PATH.parent.mkdir(parents=True, exist_ok=True)
     fd, tmp_path = tempfile.mkstemp(
-        prefix=".claude.json.", suffix=".tmp", dir=str(SETTINGS_PATH.parent)
+        prefix=".mcp_config.json.", suffix=".tmp", dir=str(SETTINGS_PATH.parent)
     )
     try:
         with os.fdopen(fd, "w") as f:
@@ -84,13 +84,13 @@ def remove_mcp() -> None:
         del servers[MCP_NAME]
         settings["mcpServers"] = servers
         save_settings(settings)
-        print(f"Removed '{MCP_NAME}' from Claude Code settings.")
+        print(f"Removed '{MCP_NAME}' from Antigravity settings.")
     else:
         print(f"'{MCP_NAME}' not found in settings.")
 
 
 def setup_mcp(api_key: str) -> None:
-    """Configure MCP server in Claude Code settings."""
+    """Configure MCP server in Antigravity settings."""
     if not api_key or not api_key.strip():
         print("Error: API key cannot be empty.")
         sys.exit(1)
@@ -113,7 +113,7 @@ def setup_mcp(api_key: str) -> None:
     print(f"\nMCP server '{MCP_NAME}' configured successfully!")
     print(f"  Package: {MCP_PACKAGE}")
     print("  Model:   MCP package default")
-    print("\nRestart Claude Code for changes to take effect.")
+    print("\nRestart Antigravity for changes to take effect.")
     print("Generated images will be saved to: ~/Documents/nanobanana_generated/")
 
 

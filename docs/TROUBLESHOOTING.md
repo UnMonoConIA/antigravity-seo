@@ -8,31 +8,29 @@
 
 **Solutions:**
 
-For plugin installs, verify the plugin directory and re-run the installer:
-
-```bash
-ls ~/.gemini/config/plugins/antigravity-seo/skills/seo/SKILL.md
-```
-
 1. Verify installation:
 ```bash
 ls ~/.gemini/config/plugins/antigravity-seo/skills/seo/SKILL.md
 ```
 
-2. Check SKILL.md has proper frontmatter:
+2. Check SKILL.md has proper frontmatter (a `---` fence, then YAML with `name:` and `description:`):
 ```bash
 head -5 ~/.gemini/config/plugins/antigravity-seo/skills/seo/SKILL.md
 ```
-Should start with `---` followed by YAML.
+The first lines should look like:
+```yaml
+---
+name: seo
+description: ...
+```
 
 3. Restart Antigravity so it rediscovers the plugin directory.
 
-4. Re-run installer:
-
-Caution: Prefer downloading, inspecting, then running remote scripts; the pipe-to-shell form below is the less-safe convenience option.
+4. Re-run the installer from a fresh clone:
 
 ```bash
-curl -fsSL https://raw.githubusercontent.com/UnMonoConIA/antigravity-seo/main/install.sh | bash
+git clone --depth 1 https://github.com/UnMonoConIA/antigravity-seo.git
+bash antigravity-seo/install.sh
 ```
 
 ---
@@ -43,9 +41,9 @@ curl -fsSL https://raw.githubusercontent.com/UnMonoConIA/antigravity-seo/main/in
 
 **Solution:**
 
-Dependencies belong in the managed runtime. From an Antigravity chat, run:
+Dependencies belong in the managed runtime. In the Antigravity chat (not a terminal), run:
 
-```bash
+```
 seo doctor
 seo setup
 ```
@@ -54,6 +52,12 @@ Or run the launcher directly:
 ```bash
 ~/.gemini/config/plugins/antigravity-seo/scripts/antigravity-seo doctor
 ~/.gemini/config/plugins/antigravity-seo/scripts/antigravity-seo setup
+```
+
+On Windows (PowerShell):
+```powershell
+powershell -ExecutionPolicy Bypass -File "$env:USERPROFILE\.gemini\config\plugins\antigravity-seo\scripts\antigravity-seo.ps1" doctor
+powershell -ExecutionPolicy Bypass -File "$env:USERPROFILE\.gemini\config\plugins\antigravity-seo\scripts\antigravity-seo.ps1" setup
 ```
 
 Do not install individual packages, use `pip --user`, or create a PATH shim.
@@ -78,7 +82,7 @@ curl -fsSL https://raw.githubusercontent.com/UnMonoConIA/antigravity-seo/main/re
 
 **Symptom:** `python is not recognized` or `pip points to wrong Python`
 
-**Solution (v1.2.0+):** The Windows installer now tries both `python` and `py -3`. If both fail:
+**Solution:** The Windows installer tries `py -3`, `python3` and `python`. If all fail:
 
 1. Install Python from [python.org](https://python.org) and check "Add to PATH"
 2. Rerun `install.ps1`. It uses `AGY_SEO_PYTHON` when set, otherwise the first of `py -3`, `python3` and `python` that is Python 3.11 to 3.14, otherwise the newest of `py -3.14` down to `py -3.11`
@@ -92,8 +96,9 @@ curl -fsSL https://raw.githubusercontent.com/UnMonoConIA/antigravity-seo/main/re
 **Symptom:** `playwright._impl._errors.Error: Executable doesn't exist`
 
 **Solution:** rerun managed setup so the browser is installed through the same
-interpreter and persistent browser directory:
-```bash
+interpreter and persistent browser directory. In the Antigravity chat, run:
+
+```
 seo setup
 seo doctor
 ```
@@ -106,8 +111,10 @@ seo doctor
 
 **Solution:**
 ```bash
-chmod +x ~/.gemini/config/plugins/antigravity-seo/scripts/*.py
+chmod +x ~/.gemini/config/plugins/antigravity-seo/scripts/antigravity-seo
 ```
+(The launcher is the only file invoked directly; the Python scripts run under
+the launcher's interpreter and need no exec bit.)
 
 ---
 
@@ -180,21 +187,21 @@ head -5 ~/.gemini/config/plugins/antigravity-seo/agents/seo-technical.md
 
 1. **Check the docs:** Review [COMMANDS.md](COMMANDS.md) and [ARCHITECTURE.md](ARCHITECTURE.md)
 
-2. **GitHub Issues:** Report bugs at the repository
+2. **GitHub Issues:** Report bugs at [github.com/UnMonoConIA/antigravity-seo/issues](https://github.com/UnMonoConIA/antigravity-seo/issues)
 
-3. **Logs:** Check Antigravity's output for error details
+3. **Logs:** Check the Antigravity chat response for error details; the runtime prints the failing stage (virtual environment, dependencies, Chromium, imports) on stderr.
 
 ## Debug Mode
 
-To see detailed output, check Antigravity's session output or run scripts directly:
+To see detailed output, check the Antigravity chat response, or run scripts through the launcher (never with a bare Python interpreter; on Windows use `scripts\antigravity-seo.ps1` instead):
 
 ```bash
 # Test fetch
-python3 ~/.gemini/config/plugins/antigravity-seo/scripts/fetch_page.py https://example.com
+~/.gemini/config/plugins/antigravity-seo/scripts/antigravity-seo run fetch_page.py https://example.com
 
 # Test parse
-python3 ~/.gemini/config/plugins/antigravity-seo/scripts/parse_html.py page.html --json
+~/.gemini/config/plugins/antigravity-seo/scripts/antigravity-seo run parse_html.py page.html --json
 
 # Test screenshot
-python3 ~/.gemini/config/plugins/antigravity-seo/scripts/capture_screenshot.py https://example.com
+~/.gemini/config/plugins/antigravity-seo/scripts/antigravity-seo run capture_screenshot.py https://example.com
 ```

@@ -64,9 +64,10 @@ if [[ ! -f "${script_dir}/plugin.json" ]]; then
 fi
 
 workspace=0
+workspace_dest=".agents/plugins/antigravity-seo"
 if [[ "${1:-}" == "--workspace" ]]; then
     workspace=1
-    dest="$(pwd)/.agents/plugins/antigravity-seo"
+    dest="$(pwd)/${workspace_dest}"
 else
     dest="${HOME}/.gemini/config/plugins/antigravity-seo"
 fi

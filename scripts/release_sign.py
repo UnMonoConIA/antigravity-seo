@@ -97,7 +97,7 @@ def _sha256(path: Path) -> str:
 
 
 def _read_plugin_version() -> str:
-    manifest = REPO_ROOT / ".claude-plugin" / "plugin.json"
+    manifest = REPO_ROOT / "plugin.json"
     try:
         with manifest.open() as fh:
             return json.load(fh).get("version", "unknown")

@@ -29,8 +29,10 @@
   <img src="https://img.shields.io/badge/Port%20of-claude--seo-8A2BE2" alt="Port of claude-seo" />
 </p>
 
-**Antigravity SEO is a free SEO plugin for Google Antigravity.** Give it any
-website and it runs a full SEO audit in 10 to 15 minutes, then hands you a
+**Antigravity SEO is a free SEO plugin for
+[Google Antigravity](https://antigravity.google/)**, Google's agentic AI
+workspace with an agent chat. Give it any website you want to improve and it
+runs a full SEO audit in 10 to 15 minutes, then hands you a
 clear action plan, sorted by what matters most.
 
 It checks everything a good SEO consultant would:
@@ -41,10 +43,13 @@ It checks everything a good SEO consultant would:
   thin pages and topic coverage.
 - **Structured data.** Finds, validates and writes Schema.org markup for rich
   results.
-- **AI search (GEO).** How likely Google AI Overviews, AI Mode, ChatGPT,
+- **AI search (GEO, Generative Engine Optimization).** How likely Google AI
+  Overviews, AI Mode, ChatGPT,
   Perplexity and Gemini are to cite your pages.
-- **Agent readiness.** Lighthouse Agentic Browsing, llms.txt, Markdown
-  delivery and WebMCP: how well AI agents can use your site.
+- **Agent readiness.** Lighthouse Agentic Browsing, llms.txt (a proposed
+  file that describes your site to AI models), Markdown delivery and WebMCP
+  (a W3C Community Group draft for exposing site tools to agents): how well
+  AI agents can use your site.
 - **Local and e-commerce SEO.** Google Business Profile, reviews, map pack,
   product pages and international sites.
 
@@ -55,17 +60,20 @@ explains why it matters and how you will know it worked.
 > [!NOTE]
 > This is the **Google Antigravity port** of
 > [Claude SEO](https://github.com/AgriciDaniel/claude-seo) by
-> [Agrici Daniel](https://agricidaniel.com) — same engine, same methodology,
-> same MIT license, native to Antigravity's plugin system (skills, rules,
-> hooks and MCP). All credit for the SEO methodology and the original
+> [Agrici Daniel](https://agricidaniel.com): same engine, same methodology,
+> same MIT license, native to Antigravity's plugin system (skills are
+> instruction files the agent loads on demand, rules are always-on
+> guidelines, hooks are scripts auto-triggered on tool events, and MCP is
+> the Model Context Protocol, a standard for tool connectors). All credit
+> for the SEO methodology and the original
 > architecture goes to the upstream project and its contributors.
 
 ## Install
 
-You need [Google Antigravity](https://antigravity.google/) and Python 3.11 to
-3.14 on your machine.
+You need [Google Antigravity](https://antigravity.google/), Python 3.11 to
+3.14, Node.js 18+ (for the schema-validation hook) and Git on your machine.
 
-**Option 1 — clone and install (recommended):**
+**Option 1 (clone and install, recommended):**
 
 ```bash
 git clone https://github.com/UnMonoConIA/antigravity-seo.git
@@ -85,22 +93,31 @@ cd antigravity-seo
   ```
 
 This copies the plugin to Antigravity's global plugin directory
-(`~/.gemini/config/plugins/antigravity-seo/`). Add `--workspace` (or
+(`~/.gemini/config/plugins/antigravity-seo/`; Antigravity keeps its
+configuration under `~/.gemini/`). Add `--workspace` (or
 `-Workspace` on Windows) to install it into the current project's
 `.agents/plugins/` instead.
 
-**Option 2 — manual:**
+**Option 2 (manual copy):**
 
-Copy (or clone) this repository into `~/.gemini/config/plugins/antigravity-seo/`
-and remove the `.git` directory so Antigravity treats it as a plugin.
+```bash
+mkdir -p ~/.gemini/config/plugins/antigravity-seo
+tar --exclude='./.git' --exclude='./.github' -cf - . | tar -C ~/.gemini/config/plugins/antigravity-seo -xf -
+```
+
+Exclude `.git` (and `.github`) when you copy: Antigravity treats a directory
+that still contains `.git` as a manual checkout, which changes where the
+runtime stores its data. Windows commands and details live in
+[docs/INSTALLATION.md](docs/INSTALLATION.md).
 
 Then:
 
 1. **Restart Google Antigravity** so the plugin is discovered.
-2. In any chat, ask: **`seo setup`** — this creates the plugin's isolated
+2. In an Antigravity agent chat (not a terminal), ask: **`seo setup`**. This
+   creates the plugin's isolated
    Python environment and a headless browser without touching the rest of
    your system.
-3. Run your first audit: **`seo audit https://example.com`**
+3. Run your first audit in the same chat: **`seo audit https://example.com`**
 
 `seo doctor` checks runtime readiness any time, without changing anything.
 
@@ -112,7 +129,7 @@ Then:
 
 ## Commands
 
-30 core and extension commands in six groups. The full reference with every
+34 core and extension commands in six groups. The full reference with every
 argument lives in [docs/COMMANDS.md](docs/COMMANDS.md).
 
 <details open>
@@ -121,7 +138,7 @@ argument lives in [docs/COMMANDS.md](docs/COMMANDS.md).
 </details>
 <details>
 <summary><b>Technical SEO</b> (7 commands)</summary>
-<ul><li><code>seo technical &lt;url&gt;</code>: Technical SEO audit across 9 categories</li><li><code>seo sitemap &lt;url | generate&gt;</code>: Analyze or generate XML sitemaps</li><li><code>seo images &lt;url&gt;</code>: Image optimization analysis</li><li><code>seo hreflang &lt;url&gt;</code>: Hreflang and i18n SEO audit and generation</li><li><code>seo programmatic &lt;url&gt;</code>: Programmatic SEO analysis and planning</li><li><code>seo google [command]</code>: Google SEO APIs: GSC, PageSpeed, CrUX, Indexing, GA4, PDF reports</li><li><code>seo drift baseline | compare | history &lt;url&gt;</code>: SEO drift monitoring with SQLite snapshots</li></ul>
+<ul><li><code>seo technical &lt;url&gt;</code>: Technical SEO audit across 9 categories</li><li><code>seo sitemap &lt;url | generate&gt;</code>: Analyze or generate XML sitemaps</li><li><code>seo images &lt;url&gt;</code>: Image optimization analysis</li><li><code>seo hreflang &lt;url&gt;</code>: Hreflang and i18n SEO audit and generation</li><li><code>seo programmatic &lt;url&gt;</code>: Programmatic SEO analysis and planning</li><li><code>seo google [command]</code>: Google SEO APIs: Search Console (GSC), PageSpeed, Chrome UX Report (CrUX), Indexing, GA4, PDF reports</li><li><code>seo drift baseline | compare | history &lt;url&gt;</code>: SEO drift monitoring with SQLite snapshots</li></ul>
 </details>
 <details>
 <summary><b>Content and E-E-A-T</b> (6 commands)</summary>
@@ -136,8 +153,8 @@ argument lives in [docs/COMMANDS.md](docs/COMMANDS.md).
 <ul><li><code>seo local &lt;url&gt;</code>: Local SEO: GBP, citations, reviews, map pack</li><li><code>seo maps [command]</code>: Maps intelligence: geo-grid, GBP audit, reviews, competitors</li><li><code>seo backlinks &lt;url&gt;</code>: Backlink profile analysis (Moz, Bing, Common Crawl)</li><li><code>seo ecommerce &lt;url&gt;</code>: E-commerce SEO and marketplace intelligence</li></ul>
 </details>
 <details>
-<summary><b>Extensions</b> (5 commands)</summary>
-<ul><li><code>seo image-gen [use-case]</code>: AI image generation for SEO assets</li><li><code>seo seranking [command]</code>: AI Share-of-Voice across ChatGPT, Gemini, Perplexity, AI Overviews, AI Mode</li><li><code>seo profound [command]</code>: LLM citation tracking with time-series data</li><li><code>seo bing [command] &lt;url&gt;</code>: Bing Webmaster Tools + IndexNow URL submission</li><li><code>seo unlighthouse &lt;url&gt;</code>: Multi-page Lighthouse runner, runs locally</li></ul>
+<summary><b>Extensions</b> (9 commands)</summary>
+<ul><li><code>seo image-gen [use-case]</code>: AI image generation for SEO assets</li><li><code>seo dataforseo [command]</code>: Live SERP, keyword and backlink data</li><li><code>seo firecrawl [command] &lt;url&gt;</code>: Full-site crawling and site mapping</li><li><code>seo ahrefs [command] &lt;url&gt;</code>: Backlinks and organic keyword data</li><li><code>seo seranking [command]</code>: AI Share-of-Voice across ChatGPT, Gemini, Perplexity, AI Overviews, AI Mode</li><li><code>seo profound [command]</code>: LLM citation tracking with time-series data</li><li><code>seo bing [command] &lt;url&gt;</code>: Bing Webmaster Tools + IndexNow URL submission</li><li><code>seo matomo [command] [args]</code>: Matomo analytics as a GA4 alternative or supplement</li><li><code>seo unlighthouse &lt;url&gt;</code>: Multi-page Lighthouse runner, runs locally</li></ul>
 </details>
 
 ## How an audit works
@@ -152,8 +169,10 @@ argument lives in [docs/COMMANDS.md](docs/COMMANDS.md).
    into a prioritized action plan. Each recommendation says what it is based
    on, what it depends on and how you will know it worked.
 
-Reports are saved as Markdown, and `seo google report` turns them into a
-polished PDF.
+Reports are saved as Markdown in a `{domain}-audit/` folder in your
+workspace (for example `example.com-audit/`, with `FULL-AUDIT-REPORT.md`,
+`ACTION-PLAN.md`, per-category `findings/` and `screenshots/`), and
+`seo google report` turns them into a polished PDF.
 
 A quality gate also runs automatically: every time the agent edits or writes
 an HTML-like file, the bundled hook validates the JSON-LD schema in it and
@@ -172,9 +191,11 @@ in Antigravity's `~/.gemini/config/mcp_config.json`.
 - **SE Ranking:** your share of voice in AI answers
 - **Profound:** tracks when AI models cite your site
 - **Bing Webmaster:** Bing data plus instant IndexNow submission
+- **Matomo:** self-hosted or cloud analytics, a GA4 alternative or supplement
 - **Unlighthouse:** Lighthouse scores for every page of your site
 
-Setup guides live in [`extensions/`](extensions/).
+Setup guides live in [`extensions/`](extensions/) and
+[docs/MCP-INTEGRATION.md](docs/MCP-INTEGRATION.md).
 
 ## FAQ
 
@@ -254,7 +275,8 @@ such as Wikipedia, Reddit and Common Crawl. See
 <summary><b>Good to know: requirements, limits and uninstall</b></summary>
 <br />
 
-**Requirements.** Google Antigravity and Python 3.11 to 3.14. `seo setup`
+**Requirements.** Google Antigravity, Python 3.11 to 3.14, Node.js 18+ and
+Git. `seo setup`
 installs the headless browser for you. The schema-validation hook needs
 Node.js on PATH.
 
@@ -267,18 +289,27 @@ scrolling or clicking can give noisy results.
 
 **Uninstall.**
 
+macOS / Linux:
+
 ```bash
 git clone --depth 1 https://github.com/UnMonoConIA/antigravity-seo.git
 cd antigravity-seo
-bash uninstall.sh          # macOS / Linux
-powershell -ExecutionPolicy Bypass -File uninstall.ps1   # Windows
+bash uninstall.sh
+```
+
+Windows (PowerShell):
+
+```powershell
+git clone --depth 1 https://github.com/UnMonoConIA/antigravity-seo.git
+cd antigravity-seo
+powershell -ExecutionPolicy Bypass -File uninstall.ps1
 ```
 
 </details>
 
 ## Contributing
 
-Contributions are very welcome — this port exists so the community can
+Contributions are very welcome: this port exists so the community can
 improve it together. Read [CONTRIBUTING.md](CONTRIBUTING.md) first and
 mention the checks you ran in your pull request (`python scripts/portability_check.py --strict`,
 `python scripts/consistency_check.py`, `python -m pytest tests/`).

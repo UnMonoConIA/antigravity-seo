@@ -63,7 +63,7 @@ Match existing antigravity-seo patterns:
 - If schema parsing fails, analyze raw HTML for product signals
 - Report all errors clearly with suggested next steps
 
-## Fetching pages (v2.0.0)
+## Fetching pages
 
 Use `"<PLUGIN_ROOT>/scripts/antigravity-seo" run render_page.py <URL> --mode auto --json` for page HTML. `auto` does a raw fetch and only spins up Playwright when an SPA shell is detected; use `--mode always` to force a render or `--mode never` to skip Playwright entirely. The JSON exposes `raw_content` (pre-JS), `content` (post-JS), `is_spa`, `extracted_text` (boilerplate-stripped via trafilatura), and `publication_date` (htmldate). SSRF and DNS-rebinding protection live in the bundled `url_safety.py` module, never call `requests.get` directly on user-supplied URLs.
 

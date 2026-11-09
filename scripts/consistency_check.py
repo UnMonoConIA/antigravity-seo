@@ -45,6 +45,17 @@ GENERIC_BASENAMES = {"README.md", "SKILL.md", "__init__.py", "LICENSE", "LICENSE
 DOC_EXAMPLE_AGENTS = {"seo-newagent"}
 LOCK_PATH = "skills/seo-flow/references/flow-prompts.lock"
 RUNTIME_UTILITY_COMMANDS = {"setup", "doctor"}
+# Files that document the Claude Code tokens by design: the port changelog
+# describes the replacement, the upstream changelog is preserved history, and
+# the guard itself names the tokens it rejects.
+TOKEN_GUARD_ALLOWLIST = {
+    "CHANGELOG.md",
+    "docs/CHANGELOG-upstream.md",
+    "scripts/consistency_check.py",
+}
+# Preserved upstream history: release notes reference scripts and paths that
+# no longer exist in the port and must keep reading as written.
+HISTORY_DOCS = {"docs/CHANGELOG-upstream.md"}
 
 
 def tracked_files():
@@ -117,7 +128,7 @@ def check_script_refs(files, texts):
     errors = []
     mentioned = set()
     for f in texts:
-        if f.startswith(("research/", ".github/")) or f == "CHANGELOG.md" or f in SELF_DOC:
+        if f.startswith(("research/", ".github/")) or f == "CHANGELOG.md" or f in SELF_DOC or f in HISTORY_DOCS:
             continue
         ext_root = extension_root(f)
         for m in sorted(set(pat.findall(read(f)))):
@@ -152,6 +163,8 @@ def check_skill_dir_script_refs(files, texts):
     pat = re.compile(r"\$\{CLAUDE_(?:SKILL_DIR|PLUGIN_ROOT)\}")
     errors = []
     for f in texts:
+        if f in TOKEN_GUARD_ALLOWLIST:
+            continue
         for m in sorted(set(pat.findall(read(f)))):
             errors.append(
                 f"{f}: Claude Code path token {m}; "
@@ -183,7 +196,7 @@ def check_runtime_invocations(texts):
         for script in sorted(set(raw_path.findall(content))):
             errors.append(
                 f"{f}: unsupported raw script path scripts/{script}; "
-                f'use "${{AGY_SEO_PLUGIN_ROOT}}/scripts/antigravity-seo" run {script}'
+                f'use "<PLUGIN_ROOT>/scripts/antigravity-seo" run {script}'
             )
         for script in sorted(set(runtime.findall(content))):
             if not os.path.isfile(os.path.join(REPO, "scripts", script)) and not any(
@@ -220,9 +233,9 @@ def check_agent_refs(files, texts):
     Path-aware, like the script-reference check: an agent resolves against the
     repo-root ``agents/`` tree, and additionally against any extension's own
     ``extensions/<ext>/agents/`` tree. Extension-supplied agents
-    (``seo-matomo``) ship only inside their extension and are copied into
-    ``~/.gemini/agents/`` at install time, so a mention of them is live, not
-    dead. Extensions whose agent is mirrored into the core tree
+    (``seo-matomo``) ship only inside their extension and are copied into the
+    plugin's ``agents/`` directory at install time, so a mention of them is
+    live, not dead. Extensions whose agent is mirrored into the core tree
     (``seo-dataforseo``, ``seo-image-gen``) resolve either way.
     """
     agents = {os.path.basename(f)[:-3] for f in files

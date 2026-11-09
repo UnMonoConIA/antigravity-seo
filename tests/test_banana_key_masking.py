@@ -21,7 +21,9 @@ FAKE_KEY = "AIzaSyFAKEFAKEFAKEFAKEFAKEFAKEFAKEwxyz"
 def _load(monkeypatch, home: Path, name: str):
     monkeypatch.setenv("HOME", str(home))
     monkeypatch.setenv("USERPROFILE", str(home))
-    (home / ".claude.json").write_text(json.dumps({"mcpServers": {"nanobanana-mcp": {
+    config_path = home / ".gemini" / "config" / "mcp_config.json"
+    config_path.parent.mkdir(parents=True)
+    config_path.write_text(json.dumps({"mcpServers": {"nanobanana-mcp": {
         "command": "npx", "args": ["-y", "@ycse/nanobanana-mcp"],
         "env": {"GOOGLE_AI_API_KEY": FAKE_KEY},
     }}}))

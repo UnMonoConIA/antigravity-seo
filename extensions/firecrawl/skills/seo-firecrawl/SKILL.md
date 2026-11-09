@@ -198,7 +198,7 @@ When Firecrawl is available during `/seo audit`:
 
 **Graceful fallback:** If Firecrawl is unavailable, inform the user and suggest:
 1. Use `fetch_page.py` for single-page analysis (no API cost)
-2. Use `WebFetch` tool for basic HTML retrieval
+2. Use `web_fetch` tool for basic HTML retrieval
 3. Install Firecrawl: `./extensions/firecrawl/install.sh`
 
 ## Security

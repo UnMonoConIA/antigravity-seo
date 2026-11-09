@@ -37,13 +37,13 @@ If the installer fails, add this to `~/.gemini/config/mcp_config.json` manually:
 
 ## 4. Verify Installation
 
-Start Claude Code and try:
+Start Antigravity and try:
 
 ```
 /seo firecrawl map https://example.com
 ```
 
-You should see a list of discovered URLs. If you get a "tool not available" error, restart Claude Code to reload MCP servers.
+You should see a list of discovered URLs. If you get a "tool not available" error, restart Antigravity to reload MCP servers.
 
 ## 5. Understanding Credits
 
