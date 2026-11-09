@@ -1,0 +1,31 @@
+# CODEOWNERS for antigravity-seo
+#
+# Every change to this repository routes review to @UnMonoConIA.
+# The security-sensitive fetchers and auth helpers additionally require
+# explicit review on top of the default owner.
+
+*                                   @UnMonoConIA
+
+# SSRF / DNS-rebinding safe fetchers and auth flows
+scripts/url_safety.py               @UnMonoConIA
+scripts/google_auth.py              @UnMonoConIA
+scripts/backlinks_auth.py           @UnMonoConIA
+scripts/render_page.py              @UnMonoConIA
+scripts/fetch_page.py               @UnMonoConIA
+scripts/capture_screenshot.py       @UnMonoConIA
+tests/test_url_safety.py            @UnMonoConIA
+SECURITY.md                         @UnMonoConIA
+
+# Install surface
+install.sh                          @UnMonoConIA
+install.ps1                         @UnMonoConIA
+uninstall.sh                        @UnMonoConIA
+uninstall.ps1                       @UnMonoConIA
+plugin.json                         @UnMonoConIA
+hooks.json                           @UnMonoConIA
+requirements.txt                    @UnMonoConIA
+pyproject.toml                      @UnMonoConIA
+CITATION.cff                        @UnMonoConIA
+
+.github/                            @UnMonoConIA
+tests/test_manifest_consistency.py  @UnMonoConIA

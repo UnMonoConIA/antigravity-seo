@@ -1,0 +1,16 @@
+{
+  "schema-validation": {
+    "PostToolUse": [
+      {
+        "matcher": "edit_file|write_file",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "node hooks/antigravity-hook.js",
+            "timeout": 30
+          }
+        ]
+      }
+    ]
+  }
+}

@@ -1,0 +1,40 @@
+{
+  "name": "antigravity-seo",
+  "version": "1.0.0",
+  "description": "Comprehensive SEO analysis plugin for Google Antigravity. 26 sub-skills (22 core + 1 orchestrator + 1 framework + 2 extension mirrors) and 19 sub-agents cover technical SEO, content quality (E-E-A-T), Schema.org markup, sitemaps, Core Web Vitals, AI search (GEO), agent readiness, local SEO, maps, backlinks, semantic clustering, SXO, drift monitoring, e-commerce, hreflang, and Google APIs. Includes optional MCP extensions, SPA-aware rendering, portability, and hardened SSRF/DNS-rebinding safe fetchers.",
+  "author": {
+    "name": "UnMonoConIA",
+    "url": "https://github.com/UnMonoConIA"
+  },
+  "license": "MIT",
+  "homepage": "https://github.com/UnMonoConIA/antigravity-seo",
+  "repository": "https://github.com/UnMonoConIA/antigravity-seo",
+  "keywords": [
+    "seo",
+    "antigravity",
+    "technical-seo",
+    "content-quality",
+    "e-e-a-t",
+    "schema-markup",
+    "core-web-vitals",
+    "local-seo",
+    "geo",
+    "ai-search",
+    "sitemap",
+    "image-optimization",
+    "hreflang",
+    "google-search-console",
+    "pagespeed",
+    "crux",
+    "ga4",
+    "backlinks",
+    "semantic-clustering",
+    "sxo",
+    "drift-monitoring",
+    "ecommerce-seo",
+    "mcp-extensions",
+    "headless-rendering",
+    "ssrf-safe-fetchers",
+    "ai-citation-optimization"
+  ]
+}

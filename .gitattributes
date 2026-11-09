@@ -1,0 +1,26 @@
+# Normalize all text files to LF in the repository. Bash launchers and hook
+# scripts must stay LF-only; Windows PowerShell reads LF scripts fine (the
+# ASCII/BOM rules in tests/test_powershell_ascii.py are what matter there).
+* text=auto
+
+# Shell scripts and hooks must never gain CRLF, even on Windows checkouts.
+*.sh text eol=lf
+hooks/antigravity-hook.js text eol=lf
+scripts/antigravity-seo text eol=lf
+
+# Windows scripts: keep CRLF so double-click and older tooling behave.
+*.ps1 text eol=crlf
+*.bat text eol=crlf
+*.cmd text eol=crlf
+
+# Binaries
+*.png binary
+*.jpg binary
+*.jpeg binary
+*.gif binary
+*.ico binary
+*.woff binary
+*.woff2 binary
+*.ttf binary
+*.mp4 binary
+*.db binary

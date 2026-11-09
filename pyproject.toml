@@ -1,0 +1,23 @@
+[project]
+name = "antigravity-seo"
+version = "1.0.0"
+description = "Comprehensive SEO analysis plugin for Google Antigravity"
+requires-python = ">=3.11"
+license = "MIT"
+readme = "README.md"
+authors = [
+  {name = "UnMonoConIA"}
+]
+keywords = ["seo", "antigravity", "ai-tools", "schema-markup", "e-e-a-t", "geo"]
+
+[project.urls]
+Homepage = "https://github.com/UnMonoConIA/antigravity-seo"
+Repository = "https://github.com/UnMonoConIA/antigravity-seo"
+
+[tool.ruff]
+target-version = "py311"
+line-length = 100
+
+[tool.ruff.lint]
+select = ["E", "F", "W", "I"]
+ignore = ["E501"]

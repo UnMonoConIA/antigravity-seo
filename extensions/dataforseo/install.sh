@@ -1,0 +1,181 @@
+#!/usr/bin/env bash
+set -euo pipefail
+
+# DataForSEO Extension Installer for Antigravity SEO
+# Wraps everything in main() to prevent partial execution on network failure
+
+main() {
+    SKILL_DIR="${HOME}/.gemini/config/plugins/antigravity-seo/skills/seo-dataforseo"
+    AGENT_DIR="${HOME}/.gemini/config/plugins/antigravity-seo/agents"
+    SEO_SKILL_DIR="${HOME}/.gemini/config/plugins/antigravity-seo"
+    # MCP servers live in ~/.gemini/config/mcp_config.json (Antigravity's global MCP config).
+    MCP_CONFIG_FILE="${HOME}/.gemini/config/mcp_config.json"
+
+    echo "════════════════════════════════════════"
+    echo "║   DataForSEO Extension - Installer   ║"
+    echo "║   For Antigravity SEO                     ║"
+    echo "════════════════════════════════════════"
+    echo ""
+
+    # Support both traditional (curl|bash → ~/.gemini/config/plugins/antigravity-seo) and marketplace
+    # (plugin install → ~/.gemini/plugins/cache/.../skills/seo) installations.
+    # Resolve early using BASH_SOURCE so it works even when run from the plugin cache.
+    _EARLY_SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
+    _PLUGIN_SEO_DIR="$(cd "${_EARLY_SCRIPT_DIR}/../.." 2>/dev/null && pwd)/skills/seo"
+    if [ ! -d "${SEO_SKILL_DIR}" ] && [ -d "${_PLUGIN_SEO_DIR}" ]; then
+        SEO_SKILL_DIR="${_PLUGIN_SEO_DIR}"
+    fi
+    if [ ! -d "${SEO_SKILL_DIR}" ]; then
+        _GLOB_MATCH=$(ls -d "${HOME}/.gemini/config/plugins/cache/*/antigravity-seo/"*/skills/seo 2>/dev/null | tail -n1 || true)
+        [ -n "${_GLOB_MATCH}" ] && [ -d "${_GLOB_MATCH}" ] && SEO_SKILL_DIR="${_GLOB_MATCH}"
+    fi
+
+    # Check prerequisites
+    if [ ! -d "${SEO_SKILL_DIR}" ]; then
+        echo "✗ Antigravity SEO is not installed."
+        echo "  Install it first: curl -fsSL https://raw.githubusercontent.com/UnMonoConIA/antigravity-seo/main/install.sh | bash"
+        exit 1
+    fi
+    echo "✓ Antigravity SEO detected"
+
+    if ! command -v node >/dev/null 2>&1; then
+        echo "✗ Node.js is required but not installed."
+        echo "  Install Node.js 20+: https://nodejs.org/"
+        exit 1
+    fi
+
+    NODE_VERSION=$(node -v | sed 's/v//' | cut -d. -f1)
+    if [ "${NODE_VERSION}" -lt 20 ]; then
+        echo "✗ Node.js 20+ required (found v${NODE_VERSION})."
+        echo "  Update: https://nodejs.org/"
+        exit 1
+    fi
+    echo "✓ Node.js v$(node -v | sed 's/v//') detected"
+
+    if ! command -v npx >/dev/null 2>&1; then
+        echo "✗ npx is required but not found (comes with npm)."
+        exit 1
+    fi
+    echo "✓ npx detected"
+
+    # Prompt for credentials
+    echo ""
+    echo "DataForSEO API credentials required."
+    echo "Sign up at: https://app.dataforseo.com/register"
+    echo ""
+
+    read -rp "DataForSEO username (email): " DFSE_USERNAME
+    if [ -z "${DFSE_USERNAME}" ]; then
+        echo "✗ Username cannot be empty."
+        exit 1
+    fi
+
+    read -rsp "DataForSEO password: " DFSE_PASSWORD
+    echo ""
+    if [ -z "${DFSE_PASSWORD}" ]; then
+        echo "✗ Password cannot be empty."
+        exit 1
+    fi
+
+    # Determine script directory (works for both ./install.sh and curl|bash)
+    SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
+
+    # Check if running from repo or standalone
+    if [ -f "${SCRIPT_DIR}/skills/seo-dataforseo/SKILL.md" ]; then
+        SOURCE_DIR="${SCRIPT_DIR}"
+    elif [ -f "${SCRIPT_DIR}/extensions/dataforseo/skills/seo-dataforseo/SKILL.md" ]; then
+        SOURCE_DIR="${SCRIPT_DIR}/extensions/dataforseo"
+    else
+        echo "✗ Cannot find extension source files."
+        echo "  Run this script from the antigravity-seo repo: ./extensions/dataforseo/install.sh"
+        exit 1
+    fi
+
+    # Install skill
+    echo ""
+    echo "→ Installing DataForSEO skill..."
+    mkdir -p "${SKILL_DIR}"
+    cp "${SOURCE_DIR}/skills/seo-dataforseo/SKILL.md" "${SKILL_DIR}/SKILL.md"
+
+    # Install agent
+    echo "→ Installing DataForSEO agent..."
+    mkdir -p "${AGENT_DIR}"
+    cp "${SOURCE_DIR}/agents/seo-dataforseo.md" "${AGENT_DIR}/seo-dataforseo.md"
+
+    # Install field config
+    echo "→ Installing field config..."
+    cp "${SOURCE_DIR}/field-config.json" "${SEO_SKILL_DIR}/dataforseo-field-config.json"
+
+    # Merge MCP config into ~/.gemini/config/mcp_config.json
+    echo "→ Configuring MCP server..."
+    FIELD_CONFIG_PATH="${SEO_SKILL_DIR}/dataforseo-field-config.json"
+
+    # Credentials travel in the environment (never argv, never interpolated into the source string)
+    # and the settings file is written atomically with 0600 permissions.
+    AGY_SEO_USERNAME="${DFSE_USERNAME}" AGY_SEO_SECRET="${DFSE_PASSWORD}" python3 - "${MCP_CONFIG_FILE}" "${FIELD_CONFIG_PATH}" <<'PY'
+import json, os, sys, tempfile
+
+settings_path, field_config = sys.argv[1:3]
+username = os.environ["AGY_SEO_USERNAME"]
+password = os.environ["AGY_SEO_SECRET"]
+
+if os.path.exists(settings_path):
+    try:
+        with open(settings_path) as f:
+            settings = json.load(f)
+    except json.JSONDecodeError:
+        sys.exit(f"✗ {settings_path} is not valid JSON. Nothing was changed; fix it and rerun.")
+else:
+    settings = {}
+
+settings.setdefault('mcpServers', {})['dataforseo'] = {
+    'command': 'npx',
+    'args': ['-y', 'dataforseo-mcp-server@2.8.10'],
+    'env': {
+        'DATAFORSEO_USERNAME': username,
+        'DATAFORSEO_PASSWORD': password,
+        'ENABLED_MODULES': 'SERP,KEYWORDS_DATA,ONPAGE,DATAFORSEO_LABS,BACKLINKS,DOMAIN_ANALYTICS,BUSINESS_DATA,CONTENT_ANALYSIS,AI_OPTIMIZATION',
+        'FIELD_CONFIG_PATH': field_config,
+    },
+}
+
+os.makedirs(os.path.dirname(settings_path) or '.', exist_ok=True)
+fd, tmp = tempfile.mkstemp(dir=os.path.dirname(settings_path) or '.', prefix='.settings.', suffix='.json')
+try:
+    with os.fdopen(fd, 'w') as f:
+        json.dump(settings, f, indent=2)
+    os.chmod(tmp, 0o600)
+    os.replace(tmp, settings_path)
+except Exception:
+    if os.path.exists(tmp):
+        os.unlink(tmp)
+    raise
+
+print('  ✓ MCP server configured in ~/.gemini/config/mcp_config.json')
+PY
+    if [ $? -ne 0 ]; then
+        echo "  ⚠  Could not auto-configure MCP server."
+        echo "  Add the dataforseo server manually to ~/.gemini/config/mcp_config.json"
+        echo "  See: extensions/dataforseo/docs/DATAFORSEO-SETUP.md"
+    fi
+
+    # Pre-warm npm package without starting the MCP server binary.
+    echo "→ Pre-downloading dataforseo-mcp-server..."
+    npx --yes --package=dataforseo-mcp-server@2.8.10 -- node -e "" >/dev/null 2>&1 || true
+
+    echo ""
+    echo "✓ DataForSEO extension installed successfully!"
+    echo ""
+    echo "Usage:"
+    echo "  1. Start Antigravity (or restart your session)"
+    echo "  2. Run commands:"
+    echo "     /seo dataforseo serp best coffee shops"
+    echo "     /seo dataforseo keywords seo tools"
+    echo "     /seo dataforseo backlinks example.com"
+    echo "     /seo dataforseo ai-mentions your brand"
+    echo ""
+    echo "All 23 commands: see extensions/dataforseo/README.md"
+    echo "To uninstall: ./extensions/dataforseo/uninstall.sh"
+}
+
+main "$@"

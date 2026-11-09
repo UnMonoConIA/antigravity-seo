@@ -1,0 +1,23 @@
+cff-version: 1.2.0
+title: "Antigravity SEO"
+message: >-
+  Free, open-source SEO audits inside Google Antigravity. Rank higher in
+  Google and get cited by AI search.
+type: software
+authors:
+  - givennames: "UnMonoConIA"
+    website: "https://github.com/UnMonoConIA"
+  - name: "Agrici Daniel"
+    website: "https://agricidaniel.com"
+repository-code: "https://github.com/UnMonoConIA/antigravity-seo"
+url: "https://github.com/UnMonoConIA/antigravity-seo"
+keywords:
+  - seo
+  - technical-seo
+  - schema-markup
+  - core-web-vitals
+  - e-e-a-t
+  - geo
+  - ai-search
+  - antigravity
+license: MIT
